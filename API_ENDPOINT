@@ -1,0 +1,1330 @@
+{
+  "info": {
+    "name": "Nkap D API",
+    "description": "Collection complète des endpoints API pour l'application Nkap D",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8000/api/nkap",
+      "type": "string"
+    },
+    {
+      "key": "token",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "Inscription",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nom\": \"Dupont\",\n  \"prenom\": \"Jean\",\n  \"email\": \"jean.dupont@example.com\",\n  \"telephone\": \"+237690000000\",\n  \"password\": \"password123\",\n  \"code_parrainage\": \"ABC123\",\n  \"date_naissance\": \"1990-01-15\",\n  \"sexe\": \"homme\",\n  \"ville\": \"Yaoundé\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/inscription",
+              "host": ["{{base_url}}"],
+              "path": ["inscription"]
+            }
+          }
+        },
+        {
+          "name": "Connexion",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"jean.dupont@example.com\",\n  \"password\": \"password123\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/connexion",
+              "host": ["{{base_url}}"],
+              "path": ["connexion"]
+            }
+          }
+        },
+        {
+          "name": "Déconnexion",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/deconnexion",
+              "host": ["{{base_url}}"],
+              "path": ["deconnexion"]
+            }
+          }
+        },
+        {
+          "name": "Profil",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/profil",
+              "host": ["{{base_url}}"],
+              "path": ["profil"]
+            }
+          }
+        },
+        {
+          "name": "Mettre à jour profil",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nom\": \"Dupont\",\n  \"prenom\": \"Jean\",\n  \"ville\": \"Douala\",\n  \"bio\": \"Passionné de technologie\",\n  \"preferences_rencontre\": {\n    \"sexe_recherche\": \"femme\",\n    \"age_min\": 25,\n    \"age_max\": 35\n  }\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/profil",
+              "host": ["{{base_url}}"],
+              "path": ["profil"]
+            }
+          }
+        },
+        {
+          "name": "Changer mot de passe",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"ancien_mot_de_passe\": \"password123\",\n  \"nouveau_mot_de_passe\": \"newpassword456\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/mot-de-passe",
+              "host": ["{{base_url}}"],
+              "path": ["mot-de-passe"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Transactions",
+      "item": [
+        {
+          "name": "Recharger compte",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"montant\": 10000,\n  \"methode_paiement\": \"mobile_money\",\n  \"reference_externe\": \"MM123456789\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/recharger",
+              "host": ["{{base_url}}"],
+              "path": ["recharger"]
+            }
+          }
+        },
+        {
+          "name": "Retirer argent",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"montant\": 5000\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/retirer",
+              "host": ["{{base_url}}"],
+              "path": ["retirer"]
+            }
+          }
+        },
+        {
+          "name": "Transférer argent",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"destinataire\": \"marie.durand@example.com\",\n  \"montant\": 2000\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/transferer",
+              "host": ["{{base_url}}"],
+              "path": ["transferer"]
+            }
+          }
+        },
+        {
+          "name": "Historique transactions",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/transactions?page=1",
+              "host": ["{{base_url}}"],
+              "path": ["transactions"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Consulter solde",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/solde",
+              "host": ["{{base_url}}"],
+              "path": ["solde"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Tontines",
+      "item": [
+        {
+          "name": "Créer tontine",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nom\": \"Tontine Famille 2025\",\n  \"prix\": 10000,\n  \"nombre_membres\": 10\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/tontines",
+              "host": ["{{base_url}}"],
+              "path": ["tontines"]
+            }
+          }
+        },
+        {
+          "name": "Rejoindre tontine",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code\": \"TONT123456\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/tontines/rejoindre",
+              "host": ["{{base_url}}"],
+              "path": ["tontines", "rejoindre"]
+            }
+          }
+        },
+        {
+          "name": "Rechercher tontine par code",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/tontines/rechercher/TONT123456",
+              "host": ["{{base_url}}"],
+              "path": ["tontines", "rechercher", "TONT123456"]
+            }
+          }
+        },
+        {
+          "name": "Mes tontines créées",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/tontines/mes-creations",
+              "host": ["{{base_url}}"],
+              "path": ["tontines", "mes-creations"]
+            }
+          }
+        },
+        {
+          "name": "Mes tontines rejointes",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/tontines/mes-adhesions",
+              "host": ["{{base_url}}"],
+              "path": ["tontines", "mes-adhesions"]
+            }
+          }
+        },
+        {
+          "name": "Détails tontine",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/tontines/1",
+              "host": ["{{base_url}}"],
+              "path": ["tontines", "1"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Parrainage",
+      "item": [
+        {
+          "name": "Vérifier code parrainage",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code\": \"ABC123\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/verifier-code-parrainage",
+              "host": ["{{base_url}}"],
+              "path": ["verifier-code-parrainage"]
+            }
+          }
+        },
+        {
+          "name": "Statistiques parrainage",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/parrainage/statistiques",
+              "host": ["{{base_url}}"],
+              "path": ["parrainage", "statistiques"]
+            }
+          }
+        },
+        {
+          "name": "Liste filleuls",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/parrainage/filleuls",
+              "host": ["{{base_url}}"],
+              "path": ["parrainage", "filleuls"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Business",
+      "item": [
+        {
+          "name": "Liste produits",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/business/produits?categorie=electronique",
+              "host": ["{{base_url}}"],
+              "path": ["business", "produits"],
+              "query": [
+                {
+                  "key": "categorie",
+                  "value": "electronique"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Créer produit",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"titre\": \"iPhone 13 Pro\",\n  \"description\": \"iPhone en excellent état, 256GB\",\n  \"prix\": 450000,\n  \"categorie\": \"electronique\",\n  \"ville\": \"Yaoundé\",\n  \"telephone_contact\": \"+237690000000\",\n  \"whatsapp\": \"+237690000000\",\n  \"images\": [\"image1.jpg\", \"image2.jpg\"]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/business/produits",
+              "host": ["{{base_url}}"],
+              "path": ["business", "produits"]
+            }
+          }
+        },
+        {
+          "name": "Détails produit",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/business/produits/1",
+              "host": ["{{base_url}}"],
+              "path": ["business", "produits", "1"]
+            }
+          }
+        },
+        {
+          "name": "Modifier produit",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"titre\": \"iPhone 13 Pro - Prix réduit\",\n  \"prix\": 400000\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/business/produits/1",
+              "host": ["{{base_url}}"],
+              "path": ["business", "produits", "1"]
+            }
+          }
+        },
+        {
+          "name": "Supprimer produit",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/business/produits/1",
+              "host": ["{{base_url}}"],
+              "path": ["business", "produits", "1"]
+            }
+          }
+        },
+        {
+          "name": "Mes produits",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/business/mes-produits",
+              "host": ["{{base_url}}"],
+              "path": ["business", "mes-produits"]
+            }
+          }
+        },
+        {
+          "name": "Marquer comme vendu",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/business/produits/1/vendu",
+              "host": ["{{base_url}}"],
+              "path": ["business", "produits", "1", "vendu"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Rencontre",
+      "item": [
+        {
+          "name": "Créer annonce",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"type\": \"amoureuse\",\n  \"titre\": \"À la recherche d'une relation sérieuse\",\n  \"description\": \"Personne sérieuse cherchant une relation durable\",\n  \"preferences\": {\n    \"age_min\": 25,\n    \"age_max\": 35\n  }\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/rencontre/annonces",
+              "host": ["{{base_url}}"],
+              "path": ["rencontre", "annonces"]
+            }
+          }
+        },
+        {
+          "name": "Mes annonces",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/rencontre/mes-annonces",
+              "host": ["{{base_url}}"],
+              "path": ["rencontre", "mes-annonces"]
+            }
+          }
+        },
+        {
+          "name": "Profils amoureuse",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/rencontre/amoureuse?page=1",
+              "host": ["{{base_url}}"],
+              "path": ["rencontre", "amoureuse"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Annonces business",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/rencontre/business",
+              "host": ["{{base_url}}"],
+              "path": ["rencontre", "business"]
+            }
+          }
+        },
+        {
+          "name": "Annonces autre",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/rencontre/autre",
+              "host": ["{{base_url}}"],
+              "path": ["rencontre", "autre"]
+            }
+          }
+        },
+        {
+          "name": "Contacter utilisateur",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"message\": \"Bonjour, j'ai vu votre profil et j'aimerais faire connaissance\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/rencontre/contacter/5",
+              "host": ["{{base_url}}"],
+              "path": ["rencontre", "contacter", "5"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Messages",
+      "item": [
+        {
+          "name": "Liste conversations",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/messages/conversations",
+              "host": ["{{base_url}}"],
+              "path": ["messages", "conversations"]
+            }
+          }
+        },
+        {
+          "name": "Messages d'une conversation",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/messages/conversations/1?page=1",
+              "host": ["{{base_url}}"],
+              "path": ["messages", "conversations", "1"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Envoyer message",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"contenu\": \"Salut, comment ça va ?\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/messages/conversations/1",
+              "host": ["{{base_url}}"],
+              "path": ["messages", "conversations", "1"]
+            }
+          }
+        },
+        {
+          "name": "Nouvelle conversation",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"destinataire_id\": 5,\n  \"message\": \"Bonjour, j'aimerais discuter avec vous\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/messages/nouvelle",
+              "host": ["{{base_url}}"],
+              "path": ["messages", "nouvelle"]
+            }
+          }
+        },
+        {
+          "name": "Nombre messages non lus",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/messages/non-lus",
+              "host": ["{{base_url}}"],
+              "path": ["messages", "non-lus"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Notifications",
+      "item": [
+        {
+          "name": "Liste notifications",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/notifications?page=1",
+              "host": ["{{base_url}}"],
+              "path": ["notifications"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Marquer notification comme lue",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/notifications/1/lue",
+              "host": ["{{base_url}}"],
+              "path": ["notifications", "1", "lue"]
+            }
+          }
+        },
+        {
+          "name": "Marquer toutes comme lues",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/notifications/tout-lire",
+              "host": ["{{base_url}}"],
+
+Nkap D est une application permettant de gagner de l'argent en ramenant des membres
+
+en effet voici comment il fonctionne
+
+Authentification : => un utilisateur qui veut integrer l'app
+va d'abord s'inscrire
+
+il va fournir des informations utiles. de plus il va devoir preciser un code de parainage (s'il ne l'a pas) il peut laisser vide et dans ce cas en backend , c'est le code de parrainage par defaut configurer par l'admin qui sera utiliser (le fondateur de l'app aura un compte dans l'app (celui vers le quel le code de parrainage est lier ))
+
+
+ensuite apres avoir creer un compte, 
+
+=>il va pouvoir recharger de l'argent dans l'application
+=>il va pouvoir creer une ou plusieurs tontine
+
+une tontine est caracteriser par un nom , un prix (a partir de 1000f et multiple de 100) et un nombre de membre souhaiter
+pour creer une tontine de montant x , alors x/2 est retirer du compte de l'utilisateur et est envoyer au compte du fondateur
+lorsque la tontine est creer un code de tontine est generer et  il doit donc obligatoirement inviter le nombre de personne mentionner a rentrer dans l'app s'inscrire (avec son code de parrainage ou pas) deja et ensuite de rejoindre la tontine en precisant le code de tontine
+
+pour rejoindre une tontine il suffit de rechercher la tontine avec le code de tontine et rejoindre
+
+lorsqu'on rejoins une tontine, on doit absolument avoir au moins le prix de la tontine en question dans son compte pour pouvoir etre un membre officiel(bien que en integrant la tontine seul la moitier du prix de la tontine sera debiter du compte)
+
+en effet chaque membre qui rejoins une tontine , se voit directement dans son solde , retirer la moitier de la somme de la tontine , (cette moitier est directement donner au membre qui a creer la tontine)
+
+et chaque membre pourra creer a son tour sa tontine et ainsi de suite
+un utilisateur ne pourra fermer une tontine que lorsque le nombre de personnes qu'il a specifier est au complet (apres avoir fermer une tontine , ceux qui essaie de rejoindre la tontine voit directement le message disans que c'est fermer)
+
+le fait de s'inscrire avec le code de parrainage d'un utilisateur , et ensuite de s'inscrire et recharger son compte jusqu'a participer a une premiere tontine va donner automatiquement au parain un bonus de 500
+par exemple : supposons que nkap D est en ligne et que on a 2 utilisateurs john et cyntia
+
+lors des retraits 25% des montants de retrait son prelever et envoyer dans le compte de l'admin
+pas de retrait qui va laisser le solde restant a moins de 1500F
+les transfert d'argent interutilisateur est possible avec des frais qui s'eleve a 5% du montant
+
+=> john s'inscrit et recharge 2000 puis lance une tontine de 1200 et specifie qu'il veut 5 membres
+	=>il se voit retirer 600 dans son compte(affecter au compte de l'admin)
+	=> alors une tontine est creer avec le code nkapd-11042025001
+	=>il partage le code avec cyntia et 3 autres
+=>cyntia s'incrit et adhere a la tontine et se voit prelever 600 de son solde
+=>les 3 autres aussi
+=>total = 600*4 = 2400
+=>la tontine est a 2400 et il manque 600 pour completer
+=>si john ne reussi pas a ajouter de membre il ne  peut rien faire
+=>si il reussi il a donc 3000 dans sa tontine et la tontine est automatiquement fermer et le montants verser dans le compte de l'utilisateur
+=>son nouveau solde est 1200+3000 = 4200
+=>il fait maintenant le retrait et il peut retirer exactement 3450 -1500 = 1950
+
+et chacun peut creer ses tontines , rejoindre ce qu'il veut et etc...
+on peut creer maximum 10 tontines en cours a la fois (une tontine en cours est une tontine qui n'a pas ete fermer)
+on peut rejoindre une infiniter de tontine
+
+chaque premier de chaque mois 500f sont prelever dans le compte de chaque membre et est directement allouer au compte du promoteur
+
+de plus pour ajouter des features dans l'app , on va ajouter deux espaces
+
+espaces buisiness qui est un endroit comme un marcher ou chacun propose ses produits (seulement les membres de nkap D peuvent voir les offres dans l'espace buisiness
+(chaussure , sacs electromenager , ... tout type de produit a vendre) la particulariter de cette app par rapport au autres en general c'est que tout les vendeurs ont une chance egales de pouvoir montrer leur produits au public car on va utiliser un algorithme aleatoire pour presenter les produits au public: de plus meme chose lors des recherches , c'est de faxon aleatoire qu'on affiche l'ordre des produits)
+
+espaces rencontre(pour rapprocher les utilisateur : deja il y'a 3 type de rencontre: 
+	=>amoureuse : pour les lovers a la recherche d'amour (on va utiliser tout simplement les criteres de chaque membre pour montrer a chaque utilisateur les memebre qui match avec leur preference)
+	=>partenaire de buisness (toujours par match et par annonce)
+	=>autre (ici c'est un systeme de chat ouvert ou chacun dit ce qu'il cherche et directement tout ceux qui sont inscrit sur nkap D peuvent voir et repondre sssi il accede explicitement a l'espace autre))
+
+les notifications seront un point cler dans l'app
+l'app va integrer une API de payement extremement puissante pour pouvoir faciliter l'utilisation de l'app
+ajouter une faq (une IA qui va guider tt les users dans l'utilisation de l'application)
+
+il faut un espace admin tres puissant pour gerer tout ce qui est dans l'app (gestion des users , gestion des tontines , gestion des paiements , gestion des contenus de l'espace buisiness et rencontre , gestion des notifications , gestion des retraits et etc...)
+donc il faut tout xa
+
+l'app sera simple
+backend : laravel
+frontend : react native(mobile)
+admin : blade laravel
+
+<?php
+
+use Illuminate\Support\Facades\Route;
+
+// Controllers API Nkap
+use App\Http\Controllers\Api\Nkap\AuthController;
+use App\Http\Controllers\Api\Nkap\TransactionController;
+use App\Http\Controllers\Api\Nkap\TontineController;
+use App\Http\Controllers\Api\Nkap\ParrainageController;
+use App\Http\Controllers\Api\Nkap\BusinessController;
+use App\Http\Controllers\Api\Nkap\RencontreController;
+use App\Http\Controllers\Api\Nkap\MessageController;
+use App\Http\Controllers\Api\Nkap\NotificationController;
+use App\Http\Controllers\Api\Nkap\FaqController;
+
+Route::prefix('nkap')->group(function () {
+    // Auth (public)
+    Route::post('/inscription', [AuthController::class, 'inscription']);
+    Route::post('/connexion', [AuthController::class, 'connexion']);
+    Route::post('/verifier-code-parrainage', [ParrainageController::class, 'verifierCode']);
+
+    // Routes protégées
+    Route::middleware('auth:sanctum')->group(function () {
+        // Auth
+        Route::post('/deconnexion', [AuthController::class, 'deconnexion']);
+        Route::get('/profil', [AuthController::class, 'profil']);
+        Route::put('/profil', [AuthController::class, 'mettreAJourProfil']);
+        Route::put('/mot-de-passe', [AuthController::class, 'changerMotDePasse']);
+
+        // Transactions
+        Route::post('/recharger', [TransactionController::class, 'recharger']);
+        Route::post('/retirer', [TransactionController::class, 'retirer']);
+        Route::post('/transferer', [TransactionController::class, 'transferer']);
+        Route::get('/transactions', [TransactionController::class, 'historique']);
+        Route::get('/solde', [TransactionController::class, 'solde']);
+
+        // Tontines
+        Route::post('/tontines', [TontineController::class, 'creer']);
+        Route::post('/tontines/rejoindre', [TontineController::class, 'rejoindre']);
+        Route::get('/tontines/rechercher/{code}', [TontineController::class, 'rechercher']);
+        Route::get('/tontines/mes-creations', [TontineController::class, 'mesCreations']);
+        Route::get('/tontines/mes-adhesions', [TontineController::class, 'mesAdhesions']);
+        Route::get('/tontines/{id}', [TontineController::class, 'details']);
+
+        // Parrainage
+        Route::get('/parrainage/statistiques', [ParrainageController::class, 'statistiques']);
+        Route::get('/parrainage/filleuls', [ParrainageController::class, 'filleuls']);
+
+        // Business
+        Route::get('/business/produits', [BusinessController::class, 'liste']);
+        Route::post('/business/produits', [BusinessController::class, 'creer']);
+        Route::get('/business/produits/{id}', [BusinessController::class, 'details']);
+        Route::put('/business/produits/{id}', [BusinessController::class, 'modifier']);
+        Route::delete('/business/produits/{id}', [BusinessController::class, 'supprimer']);
+        Route::get('/business/mes-produits', [BusinessController::class, 'mesProduits']);
+        Route::post('/business/produits/{id}/vendu', [BusinessController::class, 'marquerVendu']);
+
+        // Rencontre
+        Route::post('/rencontre/annonces', [RencontreController::class, 'creerAnnonce']);
+        Route::get('/rencontre/mes-annonces', [RencontreController::class, 'mesAnnonces']);
+        Route::get('/rencontre/amoureuse', [RencontreController::class, 'profilsAmoureuse']);
+        Route::get('/rencontre/business', [RencontreController::class, 'annoncesBusiness']);
+        Route::get('/rencontre/autre', [RencontreController::class, 'annoncesAutre']);
+        Route::post('/rencontre/contacter/{userId}', [RencontreController::class, 'contacter']);
+
+        // Messages
+        Route::get('/messages/conversations', [MessageController::class, 'conversations']);
+        Route::get('/messages/conversations/{id}', [MessageController::class, 'messages']);
+        Route::post('/messages/conversations/{id}', [MessageController::class, 'envoyer']);
+        Route::post('/messages/nouvelle', [MessageController::class, 'nouvelleConversation']);
+        Route::get('/messages/non-lus', [MessageController::class, 'nombreNonLus']);
+
+        // Notifications
+        Route::get('/notifications', [NotificationController::class, 'liste']);
+        Route::post('/notifications/{id}/lue', [NotificationController::class, 'marquerLue']);
+        Route::post('/notifications/tout-lire', [NotificationController::class, 'marquerToutesLues']);
+        Route::get('/notifications/non-lues', [NotificationController::class, 'nombreNonLues']);
+
+        // FAQ
+        Route::post('/faq/question', [FaqController::class, 'poserQuestion']);
+        Route::get('/faq', [FaqController::class, 'liste']);
+    });
+});
+
+
+{
+  "info": {
+    "_postman_id": "c6c4a2fb-2b61-4f5d-9d19-faq-nkap",
+    "name": "Nkap - FAQ",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Poser une question à la FAQ",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"question\": \"Comment fonctionne la tontine ?\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{base_url}}/api/faq/question",
+          "host": ["{{base_url}}"],
+          "path": ["api", "faq", "question"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Liste des FAQ",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/api/faq",
+          "host": ["{{base_url}}"],
+          "path": ["api", "faq"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Liste des FAQ par catégorie",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/api/faq?categorie=tontine",
+          "host": ["{{base_url}}"],
+          "path": ["api", "faq"],
+          "query": [
+            {
+              "key": "categorie",
+              "value": "tontine"
+            }
+          ]
+        }
+      },
+      "response": []
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8000"
+    }
+  ]
+}
+
+
+
+genere moi le code de la partie mobile de cet application sachant que ci haut ce sont les endpoints du backend
+
+ton application mobile doit etre en react native+expo avec gestion de la navigation entre les ecrans et la gestion de l'etat
+
+il ne doit pas avoir de base de donner locale 
+
+l'application mobile sera juste une forme d'interface pour consommer les endpoints du backend
+
+donc fonctionnera 100% en ligne
+
+creer a la fin un fichier contenant la liste des dependances du projet de faxon structurer : dependance expo et dependance react native
+
+code sans executer je vais executer moi meme dans mon environnement donc code juste
+
+l'app mobile doit etre pro et styliser : la couleur majoritaire doit etre celle de l'argent(billet de 10000F camerounais : violet + jaune) et le theme principale c'est l'argent (le billet de 10000FCFA au cameroun)
+
+genere le reacrt native : genere le code juste sans executer dans ton environnement : je vais executer moi meme imbecile : ne raconte plus rien genere juste
