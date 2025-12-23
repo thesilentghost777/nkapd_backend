@@ -5,6 +5,7 @@ namespace App\Services\Nkap;
 use App\Models\Produit;
 use App\Models\NkapUser;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Storage;
 
 class BusinessService
 {
@@ -74,6 +75,7 @@ class BusinessService
             'prix' => 'required|numeric|min:0',
             'categorie' => 'required|string',
             'images' => 'nullable|array',
+            'images.*' => 'nullable|string|url', // URLs valides uniquement
             'ville' => 'nullable|string',
             'telephone_contact' => 'nullable|string',
             'whatsapp' => 'nullable|string',
@@ -87,13 +89,33 @@ class BusinessService
             ];
         }
 
+        // Valider que ce sont bien des URLs et non des chemins locaux
+        $images = [];
+        if (!empty($data['images']) && is_array($data['images'])) {
+            foreach ($data['images'] as $image) {
+                if (is_string($image) && !empty($image)) {
+                    // Rejeter les chemins locaux (file://)
+                    if (str_starts_with($image, 'file://')) {
+                        return [
+                            'success' => false,
+                            'message' => 'Les images doivent être uploadées via /business/upload-image',
+                        ];
+                    }
+                    // Accepter uniquement les URLs valides
+                    if (filter_var($image, FILTER_VALIDATE_URL)) {
+                        $images[] = $image;
+                    }
+                }
+            }
+        }
+
         $produit = Produit::create([
             'vendeur_id' => $user->id,
             'titre' => $data['titre'],
             'description' => $data['description'],
             'prix' => $data['prix'],
             'categorie' => $data['categorie'],
-            'images' => $data['images'] ?? [],
+            'images' => $images,
             'ville' => $data['ville'] ?? $user->ville,
             'telephone_contact' => $data['telephone_contact'] ?? $user->telephone,
             'whatsapp' => $data['whatsapp'] ?? null,
@@ -136,6 +158,7 @@ class BusinessService
             'prix' => 'sometimes|numeric|min:0',
             'categorie' => 'sometimes|string',
             'images' => 'sometimes|array',
+            'images.*' => 'nullable|string|url',
             'ville' => 'sometimes|string',
             'telephone_contact' => 'sometimes|string',
             'whatsapp' => 'sometimes|string',
@@ -147,6 +170,26 @@ class BusinessService
                 'message' => 'Données invalides',
                 'errors' => $validator->errors(),
             ];
+        }
+
+        // Traiter les images
+        if (isset($data['images']) && is_array($data['images'])) {
+            $images = [];
+            foreach ($data['images'] as $image) {
+                if (is_string($image) && !empty($image)) {
+                    // Rejeter les chemins locaux
+                    if (str_starts_with($image, 'file://')) {
+                        return [
+                            'success' => false,
+                            'message' => 'Les images doivent être uploadées via /business/upload-image',
+                        ];
+                    }
+                    if (filter_var($image, FILTER_VALIDATE_URL)) {
+                        $images[] = $image;
+                    }
+                }
+            }
+            $data['images'] = $images;
         }
 
         $produit->update($data);
@@ -179,6 +222,27 @@ class BusinessService
                 'success' => false,
                 'message' => 'Vous n\'êtes pas autorisé à supprimer ce produit',
             ];
+        }
+
+        // Supprimer les images du storage
+        if (!empty($produit->images) && is_array($produit->images)) {
+            foreach ($produit->images as $imageUrl) {
+                try {
+                    // Extraire le chemin du fichier à partir de l'URL
+                    $parsedUrl = parse_url($imageUrl);
+                    if (isset($parsedUrl['path'])) {
+                        $path = ltrim($parsedUrl['path'], '/');
+                        $path = str_replace('storage/', '', $path);
+                        
+                        if (Storage::disk('public')->exists($path)) {
+                            Storage::disk('public')->delete($path);
+                        }
+                    }
+                } catch (\Exception $e) {
+                    // Log l'erreur mais continue
+                    \Log::warning("Impossible de supprimer l'image: " . $imageUrl);
+                }
+            }
         }
 
         $produit->delete();

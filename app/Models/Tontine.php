@@ -29,13 +29,14 @@ class Tontine extends Model
         'montant_total' => 'decimal:2',
         'nombre_membres_requis' => 'integer',
         'nombre_membres_actuels' => 'integer',
+        'createur_id' => 'integer',
         'date_fermeture' => 'datetime',
     ];
 
     protected static function boot()
     {
         parent::boot();
-        
+
         static::creating(function ($tontine) {
             if (empty($tontine->code)) {
                 $tontine->code = self::genererCode();
@@ -81,6 +82,10 @@ class Tontine extends Model
         }
 
         if ($this->estComplete()) {
+            return false;
+        }
+
+        if ($this->createur_id === $user->id) {
             return false;
         }
 

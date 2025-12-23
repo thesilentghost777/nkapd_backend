@@ -35,4 +35,14 @@ return [
         ],
     ],
 
+    'moneyfusion' => [
+        'payin_url' => env('MONEYFUSION_PAYIN_URL'),
+        'payout_url' => env('MONEYFUSION_PAYOUT_URL'),
+        'payout_api_key' => env('MONEYFUSION_PAYOUT_API_KEY'),
+        'status_url' => env('MONEYFUSION_STATUS_URL'),
+        'return_url' => env('MONEYFUSION_RETURN_URL'),
+        'webhook_url' => env('MONEYFUSION_WEBHOOK_URL'),
+        'payout_webhook_url' => env('MONEYFUSION_PAYOUT_WEBHOOK_URL'),
+    ],
+
 ];

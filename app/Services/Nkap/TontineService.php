@@ -8,6 +8,7 @@ use App\Models\TontineMembre;
 use App\Models\NkapConfiguration;
 use App\Models\NkapTransaction;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class TontineService
 {
@@ -53,7 +54,7 @@ class TontineService
 
         // Frais de création = 50% du prix (pour le fondateur)
         $fraisCreation = $prix / 2;
-        
+
         if ($user->solde < $fraisCreation) {
             return [
                 'success' => false,
@@ -71,7 +72,7 @@ class TontineService
                 $fondateur->crediter($fraisCreation, "Frais création tontine par {$user->nom_complet}", NkapTransaction::TYPE_FRAIS_ADMIN);
             }
 
-            // Créer la tontine
+            // Crée la tontine
             $tontine = Tontine::create([
                 'nom' => $nom,
                 'createur_id' => $user->id,
@@ -87,8 +88,8 @@ class TontineService
                 'message' => 'Tontine créée avec succès',
                 'tontine' => $tontine,
                 'code' => $tontine->code,
-                'frais_debite' => $fraisCreation,
-                'nouveau_solde' => $user->fresh()->solde,
+                'frais_debite' => (float) $fraisCreation,
+                'nouveau_solde' => (float) $user->fresh()->solde,
             ];
         });
     }
@@ -98,14 +99,26 @@ class TontineService
      */
     public function rejoindre(NkapUser $user, string $codeTontine): array
     {
+        Log::info('🔵 Tentative de rejoindre tontine', [
+            'user_id' => $user->id,
+            'code' => $codeTontine,
+        ]);
+
         $tontine = Tontine::where('code', $codeTontine)->first();
 
         if (!$tontine) {
+            Log::warning('🔴 Tontine introuvable', ['code' => $codeTontine]);
             return [
                 'success' => false,
                 'message' => 'Tontine introuvable',
             ];
         }
+
+        Log::info('🟢 Tontine trouvée', [
+            'tontine_id' => $tontine->id,
+            'statut' => $tontine->statut,
+            'membres' => "{$tontine->nombre_membres_actuels}/{$tontine->nombre_membres_requis}",
+        ]);
 
         if ($tontine->statut === 'fermee') {
             return [
@@ -128,9 +141,15 @@ class TontineService
             ];
         }
 
-        $dejaMembreQuery = TontineMembre::where('tontine_id', $tontine->id)
-            ->where('user_id', $user->id);
-        if ($dejaMembreQuery->exists()) {
+        $dejaMembre = TontineMembre::where('tontine_id', $tontine->id)
+            ->where('user_id', $user->id)
+            ->exists();
+
+        if ($dejaMembre) {
+            Log::warning('🔴 Utilisateur déjà membre', [
+                'user_id' => $user->id,
+                'tontine_id' => $tontine->id,
+            ]);
             return [
                 'success' => false,
                 'message' => 'Vous êtes déjà membre de cette tontine',
@@ -148,53 +167,122 @@ class TontineService
         // Montant à débiter = 50% du prix
         $montantADebiter = $tontine->prix / 2;
 
-        return DB::transaction(function () use ($user, $tontine, $montantADebiter) {
-            // Débiter le membre
-            $user->debiter($montantADebiter, "Adhésion tontine {$tontine->code}", NkapTransaction::TYPE_ADHESION_TONTINE);
+        Log::info('🟡 Début transaction adhésion', [
+            'user_id' => $user->id,
+            'tontine_id' => $tontine->id,
+            'montant' => $montantADebiter,
+        ]);
 
-            // Créditer le créateur de la tontine
-            $createur = $tontine->createur;
-            $createur->crediter($montantADebiter, "Adhésion à votre tontine {$tontine->code} par {$user->nom_complet}", NkapTransaction::TYPE_GAIN_TONTINE);
+        try {
+            return DB::transaction(function () use ($user, $tontine, $montantADebiter) {
+                // Débiter le membre
+                $user->debiter($montantADebiter, "Adhésion tontine {$tontine->code}", NkapTransaction::TYPE_ADHESION_TONTINE);
+                Log::info('✅ Utilisateur débité', ['montant' => $montantADebiter]);
 
-            // Ajouter le membre
-            TontineMembre::create([
-                'tontine_id' => $tontine->id,
-                'user_id' => $user->id,
-                'montant_paye' => $montantADebiter,
-                'date_adhesion' => now(),
+                
+                // Ajouter le membre
+                $membre = TontineMembre::create([
+                    'tontine_id' => $tontine->id,
+                    'user_id' => $user->id,
+                    'montant_paye' => $montantADebiter,
+                    'date_adhesion' => now(),
+                ]);
+
+                Log::info('✅ Membre créé', [
+                    'membre_id' => $membre->id,
+                    'tontine_id' => $membre->tontine_id,
+                    'user_id' => $membre->user_id,
+                ]);
+
+                // Mettre à jour la tontine
+                $tontine->nombre_membres_actuels = $tontine->nombre_membres_actuels + 1;
+                $tontine->montant_total = $tontine->montant_total + $montantADebiter;
+                $tontine->save();
+
+                Log::info('✅ Tontine mise à jour', [
+                    'membres_actuels' => $tontine->nombre_membres_actuels,
+                    'montant_total' => $tontine->montant_total,
+                ]);
+
+                // Vérifier si c'est la première tontine du filleul et donner le bonus au parrain
+                $this->verifierBonusParrainage($user);
+
+                // Vérifier si tontine complète et la fermer automatiquement
+                if ($tontine->estComplete()) {
+                    $this->fermerTontine($tontine);
+                }
+
+                $tontineFresh = $tontine->fresh();
+
+                return [
+                    'success' => true,
+                    'message' => 'Vous avez rejoint la tontine avec succès',
+                    'tontine' => [
+                        'id' => $tontineFresh->id,
+                        'nom' => $tontineFresh->nom,
+                        'code' => $tontineFresh->code,
+                        'prix' => (float) $tontineFresh->prix,
+                        'nombre_membres' => $tontineFresh->nombre_membres_requis,
+                        'membres_actuels' => $tontineFresh->nombre_membres_actuels,
+                        'montant_collecte' => (float) $tontineFresh->montant_total,
+                        'statut' => $tontineFresh->statut === 'en_cours' ? 'ouvert' : 'ferme',
+                    ],
+                    'montant_debite' => (float) $montantADebiter,
+                    'nouveau_solde' => (float) $user->fresh()->solde,
+                ];
+            });
+        } catch (\Exception $e) {
+            Log::error('🔴 Erreur transaction adhésion', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
             ]);
 
-            // Mettre à jour la tontine
-            $tontine->nombre_membres_actuels++;
-            $tontine->montant_total += $montantADebiter;
-            $tontine->save();
-
-            // Vérifier si c'est la première tontine du filleul et donner le bonus au parrain
-            $this->verifierBonusParrainage($user);
-
-            // Vérifier si tontine complète et la fermer automatiquement
-            if ($tontine->estComplete()) {
-                $this->fermerTontine($tontine);
-            }
-
             return [
-                'success' => true,
-                'message' => 'Vous avez rejoint la tontine avec succès',
-                'tontine' => $tontine->fresh(),
-                'montant_debite' => $montantADebiter,
-                'nouveau_solde' => $user->fresh()->solde,
+                'success' => false,
+                'message' => 'Erreur lors de l\'adhésion: ' . $e->getMessage(),
             ];
-        });
+        }
     }
 
     /**
      * Fermer une tontine (automatique quand complète)
+     * Crédite le créateur avec le montant total collecté
      */
     private function fermerTontine(Tontine $tontine): void
     {
+        Log::info('🟡 Fermeture de la tontine', [
+            'tontine_id' => $tontine->id,
+            'montant_total' => $tontine->montant_total,
+            'createur_id' => $tontine->createur_id,
+        ]);
+
+        // Récupérer le créateur de la tontine
+        $createur = NkapUser::find($tontine->createur_id);
+
+        if ($createur && $tontine->montant_total > 0) {
+            // Créditer le créateur avec le montant total collecté
+            $createur->crediter(
+                $tontine->montant_total,
+                "Clôture tontine {$tontine->code} - {$tontine->nom}",
+                NkapTransaction::TYPE_GAIN_TONTINE
+            );
+
+            Log::info('✅ Créateur crédité', [
+                'createur_id' => $createur->id,
+                'montant_credite' => $tontine->montant_total,
+                'nouveau_solde' => $createur->fresh()->solde,
+            ]);
+        }
+
+        // Fermer la tontine
         $tontine->statut = 'fermee';
         $tontine->date_fermeture = now();
         $tontine->save();
+
+        Log::info('✅ Tontine fermée avec succès', [
+            'tontine_id' => $tontine->id,
+            'date_fermeture' => $tontine->date_fermeture,
+        ]);
     }
 
     /**
@@ -234,13 +322,13 @@ class TontineService
             'id' => $tontine->id,
             'code' => $tontine->code,
             'nom' => $tontine->nom,
-            'prix' => $tontine->prix,
-            'montant_adhesion' => $tontine->prix / 2,
+            'prix' => (float) $tontine->prix,
+            'montant_adhesion' => (float) ($tontine->prix / 2),
             'nombre_membres' => $tontine->nombre_membres_requis,
             'membres_actuels' => $tontine->nombre_membres_actuels,
             'places_restantes' => $tontine->nombre_membres_requis - $tontine->nombre_membres_actuels,
             'statut' => $tontine->statut === 'en_cours' ? 'ouvert' : 'ferme',
-            'montant_collecte' => $tontine->montant_total,
+            'montant_collecte' => (float) $tontine->montant_total,
             'createur' => [
                 'id' => $tontine->createur->id,
                 'nom' => $tontine->createur->nom,
@@ -262,10 +350,10 @@ class TontineService
                     'id' => $tontine->id,
                     'nom' => $tontine->nom,
                     'code' => $tontine->code,
-                    'prix' => $tontine->prix,
+                    'prix' => (float) $tontine->prix,
                     'nombre_membres' => $tontine->nombre_membres_requis,
                     'membres_actuels' => $tontine->nombre_membres_actuels,
-                    'montant_collecte' => $tontine->montant_total,
+                    'montant_collecte' => (float) $tontine->montant_total,
                     'statut' => $tontine->statut === 'en_cours' ? 'ouvert' : 'ferme',
                     'created_at' => $tontine->created_at,
                 ];
@@ -293,10 +381,10 @@ class TontineService
                     'id' => $tontine->id,
                     'nom' => $tontine->nom,
                     'code' => $tontine->code,
-                    'prix' => $tontine->prix,
+                    'prix' => (float) $tontine->prix,
                     'nombre_membres' => $tontine->nombre_membres_requis,
                     'membres_actuels' => $tontine->nombre_membres_actuels,
-                    'montant_collecte' => $tontine->montant_total,
+                    'montant_collecte' => (float) $tontine->montant_total,
                     'statut' => $tontine->statut === 'en_cours' ? 'ouvert' : 'ferme',
                     'createur' => [
                         'id' => $tontine->createur->id,
@@ -338,7 +426,7 @@ class TontineService
                 'nom' => $membre->nom,
                 'prenom' => $membre->prenom,
                 'telephone' => $membre->telephone,
-                'montant_paye' => $membre->pivot->montant_paye,
+                'montant_paye' => (float) $membre->pivot->montant_paye,
                 'date_adhesion' => $membre->pivot->date_adhesion,
             ];
         });
@@ -349,10 +437,10 @@ class TontineService
                 'id' => $tontine->id,
                 'nom' => $tontine->nom,
                 'code' => $tontine->code,
-                'prix' => $tontine->prix,
+                'prix' => (float) $tontine->prix,
                 'nombre_membres' => $tontine->nombre_membres_requis,
                 'membres_actuels' => $tontine->nombre_membres_actuels,
-                'montant_collecte' => $tontine->montant_total,
+                'montant_collecte' => (float) $tontine->montant_total,
                 'statut' => $tontine->statut === 'en_cours' ? 'ouvert' : 'ferme',
                 'createur' => [
                     'id' => $tontine->createur->id,

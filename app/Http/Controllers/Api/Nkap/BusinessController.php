@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Api\Nkap;
 use App\Http\Controllers\Controller;
 use App\Services\Nkap\BusinessService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class BusinessController extends Controller
 {
@@ -110,6 +112,41 @@ class BusinessController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Erreur lors du marquage du produit',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Upload d'une image (multipart/form-data)
+     */
+    public function uploadImage(Request $request)
+    {
+        try {
+            $request->validate([
+                'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:5120', // 5MB max
+            ]);
+
+            $image = $request->file('image');
+            
+            // Générer un nom unique
+            $filename = Str::uuid() . '.' . $image->getClientOriginalExtension();
+            
+            // Stocker dans public/storage/produits/
+            $path = $image->storeAs('produits', $filename, 'public');
+            
+            // Générer l'URL complète accessible
+            $url = url('storage/' . $path);
+
+            return response()->json([
+                'success' => true,
+                'url' => $url,
+                'path' => $path,
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Erreur lors de l\'upload de l\'image',
                 'error' => $e->getMessage()
             ], 500);
         }

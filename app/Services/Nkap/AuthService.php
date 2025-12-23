@@ -60,11 +60,23 @@ class AuthService
     }
 
     /**
-     * Connexion d'un utilisateur
+     * Connexion d'un utilisateur avec email OU téléphone
      */
-    public function connexion(string $email, string $password): array
+    public function connexion(string $identifiant, string $password): array
     {
-        $user = NkapUser::where('email', $email)->first();
+        // Déterminer si c'est un email ou un téléphone
+        $isEmail = filter_var($identifiant, FILTER_VALIDATE_EMAIL);
+        
+        // Chercher l'utilisateur par email ou téléphone
+        if ($isEmail) {
+            $user = NkapUser::where('email', $identifiant)->first();
+        } else {
+            // Nettoyer le numéro de téléphone (enlever espaces, tirets, etc.)
+            $telephone = preg_replace('/[^0-9+]/', '', $identifiant);
+            $user = NkapUser::where('telephone', $telephone)
+                ->orWhere('telephone', $identifiant)
+                ->first();
+        }
 
         if (!$user || !Hash::check($password, $user->password)) {
             return [

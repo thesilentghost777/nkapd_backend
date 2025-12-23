@@ -23,8 +23,8 @@ class Produit extends Model
     ];
 
     protected $casts = [
+        'images' => 'array', // Convertit automatiquement JSON <-> Array
         'prix' => 'decimal:2',
-        'images' => 'array',
         'vues' => 'integer',
     ];
 

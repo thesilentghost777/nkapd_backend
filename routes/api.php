@@ -12,8 +12,16 @@ use App\Http\Controllers\Api\Nkap\RencontreController;
 use App\Http\Controllers\Api\Nkap\MessageController;
 use App\Http\Controllers\Api\Nkap\NotificationController;
 use App\Http\Controllers\Api\Nkap\FaqController;
+use App\Http\Controllers\Api\Nkap\PaymentController;
 
 Route::prefix('nkap')->group(function () {
+
+     // Routes publiques de callback/webhook
+    Route::get('/payment/return', [PaymentController::class, 'paymentReturn'])->name('nkap.payment.return');
+    Route::post('/payment/webhook', [PaymentController::class, 'paymentWebhook'])->name('nkap.payment.webhook');
+    Route::post('/payout/webhook', [PaymentController::class, 'payoutWebhook'])->name('nkap.payout.webhook');
+
+    
     // Auth (public)
     Route::post('/inscription', [AuthController::class, 'inscription']);
     Route::post('/connexion', [AuthController::class, 'connexion']);
@@ -55,6 +63,7 @@ Route::prefix('nkap')->group(function () {
         Route::get('/business/mes-produits', [BusinessController::class, 'mesProduits']);
         Route::post('/business/produits/{id}/vendu', [BusinessController::class, 'marquerVendu']);
 
+        Route::post('/business/upload-image', [BusinessController::class, 'uploadImage']);
         // Rencontre
         Route::post('/rencontre/annonces', [RencontreController::class, 'creerAnnonce']);
         Route::get('/rencontre/mes-annonces', [RencontreController::class, 'mesAnnonces']);

@@ -65,4 +65,5 @@ class NkapTransaction extends Model
     public const TYPE_BONUS_PARRAINAGE = 'bonus_parrainage';
     public const TYPE_FRAIS_MENSUEL = 'frais_mensuel';
     public const TYPE_FRAIS_ADMIN = 'frais_admin';
+    
 }

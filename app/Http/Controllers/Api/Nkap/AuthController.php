@@ -30,11 +30,11 @@ class AuthController extends Controller
     public function connexion(Request $request)
     {
         $data = $request->validate([
-            'email' => 'required|email',
+            'identifiant' => 'required|string', // Email OU téléphone
             'password' => 'required|string',
         ]);
 
-        return response()->json($this->authService->connexion($data['email'], $data['password']));
+        return response()->json($this->authService->connexion($data['identifiant'], $data['password']));
     }
 
     public function deconnexion(Request $request)

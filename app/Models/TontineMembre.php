@@ -21,6 +21,8 @@ class TontineMembre extends Model
     protected $casts = [
         'montant_paye' => 'decimal:2',
         'date_adhesion' => 'datetime',
+        'tontine_id' => 'integer',
+        'user_id' => 'integer',
     ];
 
     public function tontine()
