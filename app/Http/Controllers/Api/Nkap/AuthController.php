@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\Nkap;
 
 use App\Http\Controllers\Controller;
 use App\Services\Nkap\AuthService;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Http\Request;
 
 class AuthController extends Controller
@@ -12,6 +13,8 @@ class AuthController extends Controller
 
     public function inscription(Request $request)
     {
+        Log::info('Inscription demandée', ['data' => $request->all()]);
+
         $data = $request->validate([
             'nom' => 'required|string|max:100',
             'prenom' => 'required|string|max:100',
@@ -29,6 +32,8 @@ class AuthController extends Controller
 
     public function connexion(Request $request)
     {
+        Log::info('Connexion demandée', ['data' => $request->all()]);
+
         $data = $request->validate([
             'identifiant' => 'required|string', // Email OU téléphone
             'password' => 'required|string',
@@ -39,16 +44,19 @@ class AuthController extends Controller
 
     public function deconnexion(Request $request)
     {
+        Log::info('Déconnexion demandée', ['user_id' => $request->user()->id]);
         return response()->json($this->authService->deconnexion($request->user()));
     }
 
     public function profil(Request $request)
     {
+        Log::info('Profil demandé', ['user_id' => $request->user()->id]);
         return response()->json(['success' => true, 'user' => $request->user()]);
     }
 
     public function mettreAJourProfil(Request $request)
     {
+        Log::info('Mise à jour du profil demandée', ['user_id' => $request->user()->id, 'data' => $request->all()]);
         return response()->json($this->authService->mettreAJourProfil($request->user(), $request->all()));
     }
 

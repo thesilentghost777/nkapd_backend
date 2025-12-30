@@ -24,6 +24,7 @@ class NkapTransaction extends Model
         'frais',
         'methode_paiement',
         'reference_externe',
+        'nom_associe',
     ];
 
     protected $casts = [
@@ -36,7 +37,7 @@ class NkapTransaction extends Model
     protected static function boot()
     {
         parent::boot();
-        
+
         static::creating(function ($transaction) {
             if (empty($transaction->reference)) {
                 $transaction->reference = 'TXN-' . strtoupper(uniqid());
@@ -65,5 +66,4 @@ class NkapTransaction extends Model
     public const TYPE_BONUS_PARRAINAGE = 'bonus_parrainage';
     public const TYPE_FRAIS_MENSUEL = 'frais_mensuel';
     public const TYPE_FRAIS_ADMIN = 'frais_admin';
-    
 }

@@ -8,6 +8,11 @@ use Illuminate\Support\Facades\Log;
 class MoneyFusionService
 {
     /**
+     * Code pays pour le Cameroun
+     */
+    private const CAMEROON_COUNTRY_CODE = 'cm';
+
+    /**
      * Initier un paiement via MoneyFusion
      */
     public function initiatePayment(
@@ -105,24 +110,44 @@ class MoneyFusionService
     }
 
     /**
-     * Initier un retrait via MoneyFusion
+     * Initier un retrait via MoneyFusion (Cameroun uniquement)
      */
     public function initiateWithdrawal(
-        string $countryCode,
         string $phone,
         float $amount,
         string $withdrawMode
     ): array {
+        $logContext = [
+            'method' => 'initiateWithdrawal',
+            'phone_original' => $phone,
+            'amount' => $amount,
+            'withdraw_mode' => $withdrawMode,
+        ];
+
         try {
+            Log::info('MoneyFusion Withdrawal - Starting withdrawal process', $logContext);
+
+            // Formater le numéro avec le préfixe camerounais (ajoute 237 si absent)
+            $formattedPhone = $this->formatCameroonPhone($phone);
+            
+            Log::info('MoneyFusion Withdrawal - Phone number formatted', array_merge($logContext, [
+                'phone_formatted' => $formattedPhone,
+                'prefix_added' => ($phone !== $formattedPhone)
+            ]));
+
             $withdrawalData = [
-                'countryCode' => $countryCode,
-                'phone' => $phone,
+                'countryCode' => self::CAMEROON_COUNTRY_CODE,
+                'phone' => $formattedPhone,
                 'amount' => $amount,
                 'withdraw_mode' => $withdrawMode,
                 'webhook_url' => config('services.moneyfusion.payout_webhook_url'),
             ];
 
-            Log::info('MoneyFusion Withdrawal Request', $withdrawalData);
+            Log::info('MoneyFusion Withdrawal - Request payload prepared', array_merge($logContext, [
+                'payload' => $withdrawalData,
+                'api_url' => config('services.moneyfusion.payout_url'),
+                'api_key_configured' => !empty(config('services.moneyfusion.payout_api_key')),
+            ]));
 
             $response = Http::timeout(30)
                 ->withHeaders([
@@ -132,20 +157,45 @@ class MoneyFusionService
                 ])
                 ->post(config('services.moneyfusion.payout_url'), $withdrawalData);
 
+            Log::info('MoneyFusion Withdrawal - Response received', array_merge($logContext, [
+                'status_code' => $response->status(),
+                'response_body' => $response->body(),
+                'response_headers' => $response->headers(),
+            ]));
+
             if (!$response->successful()) {
-                Log::error('MoneyFusion Withdrawal Error', [
+                Log::error('MoneyFusion Withdrawal - Request failed', array_merge($logContext, [
                     'status' => $response->status(),
-                    'body' => $response->body()
-                ]);
+                    'body' => $response->body(),
+                    'headers' => $response->headers(),
+                    'phone_formatted' => $formattedPhone,
+                ]));
                 
                 throw new \Exception('Erreur lors de l\'initialisation du retrait');
             }
 
             $data = $response->json();
 
+            Log::info('MoneyFusion Withdrawal - Response parsed', array_merge($logContext, [
+                'response_data' => $data,
+                'has_statut' => isset($data['statut']),
+                'statut_value' => $data['statut'] ?? null,
+                'has_token' => isset($data['tokenPay']),
+            ]));
+
             if (!isset($data['statut']) || !$data['statut']) {
+                Log::error('MoneyFusion Withdrawal - Invalid status in response', array_merge($logContext, [
+                    'response_data' => $data,
+                    'error_message' => $data['message'] ?? 'No message provided'
+                ]));
+                
                 throw new \Exception($data['message'] ?? 'Erreur inconnue');
             }
+
+            Log::info('MoneyFusion Withdrawal - Withdrawal initiated successfully', array_merge($logContext, [
+                'token' => $data['tokenPay'] ?? 'N/A',
+                'message' => $data['message'] ?? 'N/A',
+            ]));
 
             return [
                 'success' => true,
@@ -154,46 +204,36 @@ class MoneyFusionService
             ];
 
         } catch (\Exception $e) {
-            Log::error('MoneyFusion Withdrawal Exception', [
-                'message' => $e->getMessage(),
+            Log::error('MoneyFusion Withdrawal - Exception caught', array_merge($logContext, [
+                'error_message' => $e->getMessage(),
+                'error_file' => $e->getFile(),
+                'error_line' => $e->getLine(),
                 'trace' => $e->getTraceAsString()
-            ]);
+            ]));
 
             throw new \Exception('Impossible d\'initier le retrait: ' . $e->getMessage());
         }
     }
 
     /**
-     * Mapper le mode de paiement vers le withdraw_mode MoneyFusion
+     * Formate un numéro de téléphone camerounais en ajoutant le préfixe 237 si nécessaire
      */
-    public function getWithdrawMode(string $methodePaiement, string $countryCode = 'cm'): string
+    private function formatCameroonPhone(string $phone): string
     {
-        // Mapping des méthodes de paiement vers les withdraw_mode
-        $mapping = [
-            'cm' => [
-                'orange_money' => 'orange-money-cm',
-                'mtn_money' => 'mtn-cm',
-            ],
-            'ci' => [
-                'orange_money' => 'orange-money-ci',
-                'mtn_money' => 'mtn-ci',
-                'moov' => 'moov-ci',
-                'wave' => 'wave-ci',
-            ],
-            'sn' => [
-                'orange_money' => 'orange-money-senegal',
-                'free_money' => 'free-money-senegal',
-                'wave' => 'wave-senegal',
-                'expresso' => 'expresso-senegal',
-            ],
-        ];
-
-        $mode = $mapping[$countryCode][$methodePaiement] ?? null;
-
-        if (!$mode) {
-            throw new \Exception("Mode de paiement non supporté pour ce pays");
+        // Nettoyer le numéro (enlever espaces, tirets, etc.)
+        $cleaned = preg_replace('/[^0-9]/', '', $phone);
+        
+        // Si le numéro commence déjà par 237, le retourner tel quel
+        if (str_starts_with($cleaned, '237')) {
+            return $cleaned;
         }
-
-        return $mode;
+        
+        // Si le numéro commence par +237, enlever le + et retourner
+        if (str_starts_with($phone, '+237')) {
+            return preg_replace('/[^0-9]/', '', $phone);
+        }
+        
+        // Sinon, ajouter 237 devant
+        return '237' . $cleaned;
     }
 }

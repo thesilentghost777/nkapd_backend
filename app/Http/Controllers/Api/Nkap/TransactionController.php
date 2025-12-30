@@ -22,22 +22,24 @@ class TransactionController extends Controller
         return response()->json($result);
     }
     public function retirer(Request $request)
-    {
-        $data = $request->validate([
-            'montant' => 'required|numeric|min:100',
-            'telephone' => 'required|string|min:9|max:9',
-            'operateur' => 'required|string|in:orange_money,mtn_momo',
-        ]);
-       
-        $result = $this->service->retirer(
-            $request->user(),
-            $data['montant'],
-            $data['telephone'],
-            $data['operateur']
-        );
-       
-        return response()->json($result);
-    }
+{
+    $data = $request->validate([
+        'montant' => 'required|numeric|min:100',
+        'telephone' => 'required|string|min:9|max:9',
+        'operateur' => 'required|string|in:orange_money,mtn_momo',
+        'nom_associe' => 'required|string|min:2|max:255',
+    ]);
+   
+    $result = $this->service->retirer(
+        $request->user(),
+        $data['montant'],
+        $data['telephone'],
+        $data['operateur'],
+        $data['nom_associe']
+    );
+   
+    return response()->json($result);
+}
     public function transferer(Request $request)
     {
         $data = $request->validate([

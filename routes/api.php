@@ -16,7 +16,15 @@ use App\Http\Controllers\Api\Nkap\PaymentController;
 
 Route::prefix('nkap')->group(function () {
 
-     // Routes publiques de callback/webhook
+    //route de test
+    Route::get('/test', function () {
+        return response()->json(['success' => true, 'message' => 'API NKAP fonctionne correctement.']);
+    });
+    //route de test de post
+    Route::post('/test', function () {
+        return response()->json(['success' => true, 'message' => 'API NKAP fonctionne correctement.']);
+    });
+    // Routes publiques de callback/webhook
     Route::get('/payment/return', [PaymentController::class, 'paymentReturn'])->name('nkap.payment.return');
     Route::post('/payment/webhook', [PaymentController::class, 'paymentWebhook'])->name('nkap.payment.webhook');
     Route::post('/payout/webhook', [PaymentController::class, 'payoutWebhook'])->name('nkap.payout.webhook');

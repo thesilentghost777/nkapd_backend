@@ -8,6 +8,7 @@ use App\Models\NkapConfiguration;
 use App\Models\NkapPaymentTracking;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 
 class TransactionService
 {
@@ -26,15 +27,18 @@ class TransactionService
 ): array 
 {
     try {
-        // Supprimer les anciennes recharges avec token vide pour cet utilisateur
+        // Supprimer les anciennes recharges en attente pour cet utilisateur
         NkapPaymentTracking::where('user_id', $user->id)
             ->where('type', 'recharge')
-            ->where(function($query) {
-                $query->where('token_pay', '')
-                      ->orWhereNull('token_pay');
-            })
+            ->where('statut', 'pending')
             ->delete();
-        
+
+        // Supprimer aussi les transactions en attente
+        NkapTransaction::where('user_id', $user->id)
+            ->where('type', NkapTransaction::TYPE_RECHARGE)
+            ->where('statut', 'en_attente')
+            ->delete();
+
         // Créer un tracking de paiement
         $tracking = NkapPaymentTracking::create([
             'user_id' => $user->id,
@@ -45,7 +49,7 @@ class TransactionService
             'statut' => 'pending',
             'token_pay' => '', // Sera mis à jour après l'appel à MoneyFusion
         ]);
-        
+
         // Initier le paiement via MoneyFusion
         $paymentResult = $this->moneyFusion->initiatePayment(
             montant: $montant,
@@ -60,13 +64,13 @@ class TransactionService
             ],
             articles: [['recharge' => $montant]]
         );
-        
+
         // Mettre à jour le tracking avec le token et l'URL
         $tracking->update([
             'token_pay' => $paymentResult['token'],
             'payment_url' => $paymentResult['payment_url'],
         ]);
-        
+
         // Créer une transaction en attente
         $transaction = NkapTransaction::create([
             'user_id' => $user->id,
@@ -80,7 +84,7 @@ class TransactionService
             'reference_externe' => $paymentResult['token'],
             'metadata' => json_encode(['tracking_id' => $tracking->id]),
         ]);
-        
+
         return [
             'success' => true,
             'message' => 'Paiement initialisé',
@@ -94,7 +98,7 @@ class TransactionService
             'user_id' => $user->id,
             'message' => $e->getMessage()
         ]);
-        
+
         return [
             'success' => false,
             'message' => $e->getMessage(),
@@ -155,45 +159,60 @@ class TransactionService
      * Compléter une recharge après paiement réussi
      */
     private function completeRecharge(NkapPaymentTracking $tracking, array $webhookData): bool
-    {
-        return DB::transaction(function () use ($tracking, $webhookData) {
-            $user = $tracking->user;
-            $montant = $tracking->montant;
+{
+    return DB::transaction(function () use ($tracking, $webhookData) {
+        $user = $tracking->user;
+        $montant = $tracking->montant;
 
-            // Créditer le compte utilisateur
-            $soldeAvant = $user->solde;
-            $user->solde += $montant;
-            $user->save();
+        // Créditer le compte utilisateur
+        $soldeAvant = $user->solde;
+        $user->solde += $montant;
+        $user->save();
 
-            // Créer la transaction complète
-            NkapTransaction::create([
-                'user_id' => $user->id,
-                'type' => NkapTransaction::TYPE_RECHARGE,
-                'montant' => $montant,
-                'solde_avant' => $soldeAvant,
-                'solde_apres' => $user->solde,
-                'description' => "Recharge via " . ($webhookData['moyen'] ?? 'Mobile Money'),
-                'statut' => 'complete',
-                'methode_paiement' => $tracking->methode_paiement,
-                'reference_externe' => $tracking->token_pay,
-                'metadata' => json_encode([
-                    'tracking_id' => $tracking->id,
-                    'numero_transaction' => $webhookData['numeroTransaction'] ?? null
-                ]),
-            ]);
+        // Créer la transaction complète
+        $transaction = NkapTransaction::create([
+            'user_id' => $user->id,
+            'type' => NkapTransaction::TYPE_RECHARGE,
+            'montant' => $montant,
+            'solde_avant' => $soldeAvant,
+            'solde_apres' => $user->solde,
+            'description' => "Recharge via " . ($webhookData['moyen'] ?? 'Mobile Money'),
+            'statut' => 'complete',
+            'methode_paiement' => $tracking->methode_paiement,
+            'reference_externe' => $tracking->token_pay,
+            'metadata' => json_encode([
+                'tracking_id' => $tracking->id,
+                'numero_transaction' => $webhookData['numeroTransaction'] ?? null
+            ]),
+        ]);
 
-            // Marquer le tracking comme complété
-            $tracking->markAsCompleted();
+        // Marquer le tracking comme complété
+        $tracking->markAsCompleted();
 
-            Log::info('Recharge completed', [
-                'user_id' => $user->id,
-                'montant' => $montant,
-                'token' => $tracking->token_pay
-            ]);
+        // Supprimer toutes les anciennes transactions en attente de cet utilisateur
+        NkapTransaction::where('user_id', $user->id)
+            ->where('type', NkapTransaction::TYPE_RECHARGE)
+            ->where('statut', 'en_attente')
+            ->where('id', '!=', $transaction->id) // Exclure la transaction actuelle si elle existe
+            ->delete();
 
-            return true;
-        });
-    }
+        // Supprimer aussi les anciens trackings en attente
+        NkapPaymentTracking::where('user_id', $user->id)
+            ->where('type', 'recharge')
+            ->where('statut', 'pending')
+            ->where('id', '!=', $tracking->id) // Exclure le tracking actuel
+            ->delete();
+
+        Log::info('Recharge completed', [
+            'user_id' => $user->id,
+            'montant' => $montant,
+            'token' => $tracking->token_pay,
+            'cleaned_pending_transactions' => true
+        ]);
+
+        return true;
+    });
+}
 
     /**
      * Annuler une recharge
@@ -215,19 +234,46 @@ class TransactionService
         return true;
     }
 
-    /**
-     * Effectuer un retrait (25% pour l'admin, solde min 1500F après retrait)
-     */
-  public function retirer(NkapUser $user, float $montant, string $telephone, string $operateur): array
+/**
+ * Effectuer un retrait MANUEL (25% pour l'admin, solde min 1500F après retrait)
+ * Le retrait est traité manuellement par l'équipe dans les 24h
+ */
+public function retirer(NkapUser $user, float $montant, string $telephone, string $operateur, string $nomAssocie): array
 {
+    $logContext = [
+        'method' => 'retirer_manuel',
+        'user_id' => $user->id,
+        'user_email' => $user->email ?? 'N/A',
+        'montant' => $montant,
+        'telephone' => $telephone,
+        'operateur' => $operateur,
+        'nom_associe' => $nomAssocie,
+        'solde_actuel' => $user->solde,
+    ];
+
+    Log::info('Manual Withdrawal Process - Starting withdrawal request', $logContext);
+
     $fraisPourcentage = NkapConfiguration::getFraisRetraitPourcentage();
     $soldeMinimum = NkapConfiguration::getSoldeMinimumApresRetrait();
     $frais = ceil($montant * ($fraisPourcentage / 100));
     $montantNet = $montant - $frais;
     $soldeApresRetrait = $user->solde - $montant;
+
+    Log::info('Manual Withdrawal Process - Fees calculated', array_merge($logContext, [
+        'frais_pourcentage' => $fraisPourcentage,
+        'frais' => $frais,
+        'montant_net' => $montantNet,
+        'solde_minimum' => $soldeMinimum,
+        'solde_apres_retrait' => $soldeApresRetrait,
+    ]));
    
     // Validation du numéro de téléphone
     if (strlen($telephone) !== 9 || !is_numeric($telephone)) {
+        Log::warning('Manual Withdrawal Process - Invalid phone number', array_merge($logContext, [
+            'phone_length' => strlen($telephone),
+            'is_numeric' => is_numeric($telephone),
+        ]));
+
         return [
             'success' => false,
             'message' => 'Le numéro de téléphone doit contenir exactement 9 chiffres',
@@ -236,6 +282,10 @@ class TransactionService
    
     // Validation de l'opérateur
     if (!in_array($operateur, ['orange_money', 'mtn_momo'])) {
+        Log::warning('Manual Withdrawal Process - Invalid operator', array_merge($logContext, [
+            'allowed_operators' => ['orange_money', 'mtn_momo']
+        ]));
+
         return [
             'success' => false,
             'message' => 'Opérateur non valide. Choisissez Orange Money ou MTN Mobile Money',
@@ -244,6 +294,11 @@ class TransactionService
    
     if ($soldeApresRetrait < $soldeMinimum) {
         $montantMaxRetrait = $user->solde - $soldeMinimum;
+        
+        Log::warning('Manual Withdrawal Process - Insufficient balance after minimum', array_merge($logContext, [
+            'montant_max_retrait' => $montantMaxRetrait,
+        ]));
+
         return [
             'success' => false,
             'message' => "Retrait impossible. Vous devez conserver au moins " . number_format($soldeMinimum, 0, ',', ' ') . " FCFA. Montant maximum de retrait: " . number_format($montantMaxRetrait, 0, ',', ' ') . " FCFA",
@@ -251,6 +306,8 @@ class TransactionService
     }
    
     if ($user->solde < $montant) {
+        Log::warning('Manual Withdrawal Process - Insufficient balance', $logContext);
+
         return [
             'success' => false,
             'message' => 'Solde insuffisant',
@@ -258,13 +315,19 @@ class TransactionService
     }
    
     try {
+        Log::info('Manual Withdrawal Process - Cleaning old pending trackings', $logContext);
+
         // Supprimer les anciens trackings avec token vide pour cet utilisateur
-        NkapPaymentTracking::where('user_id', $user->id)
+        $deletedCount = NkapPaymentTracking::where('user_id', $user->id)
             ->where('type', 'retrait')
             ->where('token_pay', '')
             ->delete();
+
+        Log::info('Manual Withdrawal Process - Old trackings cleaned', array_merge($logContext, [
+            'deleted_count' => $deletedCount
+        ]));
        
-        // Créer un tracking de retrait
+        // Créer un tracking de retrait MANUEL
         $tracking = NkapPaymentTracking::create([
             'user_id' => $user->id,
             'type' => 'retrait',
@@ -273,40 +336,27 @@ class TransactionService
             'numero_telephone' => $telephone,
             'operateur' => $operateur,
             'statut' => 'pending',
-            'token_pay' => '',
+            'token_pay' => 'MANUAL_' . strtoupper(uniqid()),
         ]);
+
+        Log::info('Manual Withdrawal Process - Tracking created', array_merge($logContext, [
+            'tracking_id' => $tracking->id,
+            'tracking_token' => $tracking->token_pay
+        ]));
        
-        // CORRECTION ICI : Mapper correctement les opérateurs pour le Cameroun
-        $countryCode = 'cm';
-        $withdrawModeMap = [
-            'orange_money' => 'orange-money-cm',
-            'mtn_momo' => 'mtn-cm'
-        ];
-        
-        $withdrawMode = $withdrawModeMap[$operateur] ?? null;
-        
-        if (!$withdrawMode) {
-            throw new \Exception("Opérateur non supporté: {$operateur}");
-        }
-       
-        // Initier le retrait via MoneyFusion avec le numéro fourni
-        $withdrawalResult = $this->moneyFusion->initiateWithdrawal(
-            countryCode: $countryCode,
-            phone: $telephone,
-            amount: $montantNet,
-            withdrawMode: $withdrawMode
-        );
-       
-        // Mettre à jour le tracking
-        $tracking->update([
-            'token_pay' => $withdrawalResult['token'],
-        ]);
-       
-        // Débiter immédiatement le compte (sera recrédité si le retrait échoue)
-        return DB::transaction(function () use ($user, $montant, $montantNet, $frais, $tracking, $withdrawalResult, $telephone, $operateur) {
+        // Débiter immédiatement le compte et créer la transaction
+        Log::info('Manual Withdrawal Process - Starting database transaction', $logContext);
+
+        $result = DB::transaction(function () use ($user, $montant, $montantNet, $frais, $tracking, $telephone, $operateur, $nomAssocie, $logContext) {
             $soldeAvant = $user->solde;
             $user->solde -= $montant;
             $user->save();
+
+            Log::info('Manual Withdrawal Process - User balance updated', array_merge($logContext, [
+                'solde_avant' => $soldeAvant,
+                'solde_apres' => $user->solde,
+                'montant_debite' => $montant
+            ]));
            
             $operateurLabel = $operateur === 'orange_money' ? 'Orange Money' : 'MTN Mobile Money';
            
@@ -316,55 +366,124 @@ class TransactionService
                 'montant' => $montant,
                 'solde_avant' => $soldeAvant,
                 'solde_apres' => $user->solde,
-                'description' => "Retrait en cours sur {$telephone} via {$operateurLabel} - Frais: " . number_format($frais, 0, ',', ' ') . " FCFA",
+                'description' => "Retrait en cours de traitement sur {$telephone} ({$nomAssocie}) via {$operateurLabel} - Frais: " . number_format($frais, 0, ',', ' ') . " FCFA",
                 'statut' => 'en_attente',
                 'frais' => $frais,
-                'reference_externe' => $withdrawalResult['token'],
+                'reference_externe' => $tracking->token_pay,
+                'nom_associe' => $nomAssocie,
                 'metadata' => json_encode([
                     'tracking_id' => $tracking->id,
                     'telephone' => $telephone,
                     'operateur' => $operateur,
+                    'nom_associe' => $nomAssocie,
+                    'type_traitement' => 'manuel',
                 ]),
             ]);
+
+            Log::info('Manual Withdrawal Process - Transaction created successfully', array_merge($logContext, [
+                'transaction_id' => $transaction->id,
+                'reference_externe' => $tracking->token_pay
+            ]));
            
             return [
-                'success' => true,
-                'message' => "Retrait en cours de traitement sur le {$telephone} via {$operateurLabel}",
-                'token' => $withdrawalResult['token'],
-                'tracking_id' => $tracking->id,
-                'montant_brut' => $montant,
-                'frais' => $frais,
-                'montant_net' => $montantNet,
-                'nouveau_solde' => $user->solde,
-                'telephone' => $telephone,
-                'operateur' => $operateurLabel,
+                'user' => $user,
+                'transaction' => $transaction,
+                'tracking' => $tracking,
+                'operateur_label' => $operateurLabel,
             ];
         });
-    } catch (\Exception $e) {
-        Log::error('Withdrawal Error', [
-            'user_id' => $user->id,
+
+        // Envoyer les notifications par email
+        try {
+            $this->envoyerNotificationsRetrait($result['user'], $result['transaction'], $montantNet, $frais, $telephone, $nomAssocie, $result['operateur_label']);
+            Log::info('Manual Withdrawal Process - Email notifications sent', $logContext);
+        } catch (\Exception $e) {
+            Log::error('Manual Withdrawal Process - Failed to send email notifications', array_merge($logContext, [
+                'error' => $e->getMessage()
+            ]));
+        }
+           
+        return [
+            'success' => true,
+            'message' => "Votre demande de retrait a été enregistrée. Vous recevrez {$montantNet} FCFA sur le {$telephone} ({$nomAssocie}) via {$result['operateur_label']} dans les 24h. Pour toute urgence, contactez notre support WhatsApp.",
+            'token' => $result['tracking']->token_pay,
+            'tracking_id' => $result['tracking']->id,
+            'montant_brut' => $montant,
+            'frais' => $frais,
+            'montant_net' => $montantNet,
+            'nouveau_solde' => $result['user']->solde,
             'telephone' => $telephone,
-            'operateur' => $operateur,
-            'withdraw_mode_used' => $withdrawMode ?? 'N/A',
-            'message' => $e->getMessage(),
+            'nom_associe' => $nomAssocie,
+            'operateur' => $result['operateur_label'],
+            'delai_traitement' => '24h',
+            'support_whatsapp' => '+237696087354',
+        ];
+    } catch (\Exception $e) {
+        Log::error('Manual Withdrawal Process - Exception caught', array_merge($logContext, [
+            'error_message' => $e->getMessage(),
+            'error_file' => $e->getFile(),
+            'error_line' => $e->getLine(),
             'trace' => $e->getTraceAsString()
-        ]);
+        ]));
        
         return [
             'success' => false,
-            'message' => $e->getMessage(),
+            'message' => 'Une erreur est survenue lors de la demande de retrait. Veuillez réessayer.',
         ];
     }
 }
 
+/**
+ * Envoyer les notifications par email pour un retrait manuel
+ */
+private function envoyerNotificationsRetrait($user, $transaction, $montantNet, $frais, $telephone, $nomAssocie, $operateurLabel)
+{
+    $dgEmail = config('app.dg_notif');
+    $ghostEmail = config('app.ghost_notif');
+    
+    $details = [
+        'user_name' => $user->nom . ' ' . $user->prenom,
+        'user_email' => $user->email,
+        'user_phone' => $user->telephone,
+        'transaction_id' => $transaction->id,
+        'reference' => $transaction->reference_externe,
+        'montant_brut' => number_format($transaction->montant, 0, ',', ' ') . ' FCFA',
+        'frais' => number_format($frais, 0, ',', ' ') . ' FCFA',
+        'montant_net' => number_format($montantNet, 0, ',', ' ') . ' FCFA',
+        'telephone_destinataire' => $telephone,
+        'nom_associe' => $nomAssocie,
+        'operateur' => $operateurLabel,
+        'date' => $transaction->created_at->format('d/m/Y à H:i'),
+    ];
+
+    // Email au DG
+    if ($dgEmail) {
+        Mail::send('emails.retrait-notification', $details, function ($message) use ($dgEmail, $details) {
+            $message->to($dgEmail)
+                    ->subject('Nouvelle demande de retrait - ' . $details['reference']);
+        });
+    }
+
+    // Email au développeur
+    if ($ghostEmail) {
+        Mail::send('emails.retrait-notification', $details, function ($message) use ($ghostEmail, $details) {
+            $message->to($ghostEmail)
+                    ->subject('Nouvelle demande de retrait - ' . $details['reference']);
+        });
+    }
+}
+
+
     /**
-     * Traiter le webhook de retrait
-     */
-    public function handleWithdrawalWebhook(array $webhookData): bool
-    {
-        try {
-            $event = $webhookData['event'] ?? '';
-            $tokenPay = $webhookData['tokenPay'] ?? '';
+ * Traiter le webhook de retrait
+ */
+
+
+ public function handleWithdrawalWebhook(array $webhookData): bool
+{
+    try {
+        $event = $webhookData['event'] ?? '';
+        $tokenPay = $webhookData['tokenPay'] ?? '';
 
             if (!$tokenPay) {
                 Log::error('Withdrawal webhook sans tokenPay', $webhookData);

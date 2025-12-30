@@ -1125,7 +1125,7 @@ espaces rencontre(pour rapprocher les utilisateur : deja il y'a 3 type de rencon
 
 les notifications seront un point cler dans l'app
 l'app va integrer une API de payement extremement puissante pour pouvoir faciliter l'utilisation de l'app
-ajouter une faq (une IA qui va guider tt les users dans l'utilisation de l'application)
+ajouter une faq (repondre au question qui va guider tt les users dans l'utilisation de l'application)
 
 il faut un espace admin tres puissant pour gerer tout ce qui est dans l'app (gestion des users , gestion des tontines , gestion des paiements , gestion des contenus de l'espace buisiness et rencontre , gestion des notifications , gestion des retraits et etc...)
 donc il faut tout xa
@@ -1327,4 +1327,4 @@ code sans executer je vais executer moi meme dans mon environnement donc code ju
 
 l'app mobile doit etre pro et styliser : la couleur majoritaire doit etre celle de l'argent(billet de 10000F camerounais : violet + jaune) et le theme principale c'est l'argent (le billet de 10000FCFA au cameroun)
 
-genere le reacrt native : genere le code juste sans executer dans ton environnement : je vais executer moi meme imbecile : ne raconte plus rien genere juste
+genere le react native : genere le code juste sans executer dans ton environnement : je vais executer moi meme imbecile : ne raconte plus rien genere juste

@@ -38,6 +38,8 @@ return [
     | application. If disabled, a simple generic error page is shown.
     |
     */
+    'dg_notif' => env('DG_NOTIF'),
+    'ghost_notif' => env('GHOST_NOTIF'),
 
     'debug' => (bool) env('APP_DEBUG', false),
 
@@ -123,4 +125,5 @@ return [
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
 
+    
 ];
