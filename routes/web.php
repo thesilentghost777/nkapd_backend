@@ -14,6 +14,11 @@ use App\Http\Controllers\Admin\NkapConversationController;
 use App\Http\Controllers\Admin\AnnonceRencontreController;
 use Illuminate\Support\Facades\Route;
 
+Route::get('/nkap-d', function () {
+    return view('landing.nkap-d');
+})->name('landing.nkap-d');
+
+
 Route::get('/', function () {
     return view('welcome');
 });
