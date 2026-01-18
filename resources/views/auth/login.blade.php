@@ -139,7 +139,7 @@
 
         <!-- Footer -->
         <div class="text-center mt-6 text-sm text-slate-500">
-            <p>&copy; 2024 Votre Application. Tous droits réservés.</p>
+            <p>&copy; 2026 Nkap dey. Tous droits réservés.</p>
         </div>
     </div>
 </body>
