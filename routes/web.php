@@ -23,6 +23,13 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+// Route pour la page de suppression de compte
+// À ajouter dans routes/web.php
+
+Route::get('/delete-account', function () {
+    return view('how_delete');
+})->name('account.delete');
+
 Route::get('/admin/dashboard', [NkapDashboardController::class, 'index'])->name('dashboard');
 
 // ===================== NKAP ADMIN ROUTES =====================
