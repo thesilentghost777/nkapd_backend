@@ -160,4 +160,58 @@ class AuthService
             'message' => 'Mot de passe modifié avec succès',
         ];
     }
+
+    public function supprimerUtilisateur(int $userId): array
+    {
+        try {
+            $user = NkapUser::findOrFail($userId);
+
+            // Vérifier si l'utilisateur est déjà désactivé
+            if (!$user->is_active) {
+                return [
+                    'success' => false,
+                    'message' => 'Cet utilisateur est déjà désactivé',
+                ];
+            }
+
+            // Désactiver l'utilisateur au lieu de le supprimer
+            $user->is_active = false;
+            $user->save();
+
+            // Révoquer tous les tokens de l'utilisateur
+            $user->tokens()->delete();
+
+            Log::info('Utilisateur désactivé avec succès', ['user_id' => $userId]);
+
+            return [
+                'success' => true,
+                'message' => 'L\'utilisateur a bien été supprimé',
+                'user' => [
+                    'id' => $user->id,
+                    'nom_complet' => $user->nom_complet,
+                    'email' => $user->email,
+                    'is_active' => $user->is_active,
+                ],
+            ];
+
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            Log::error('Utilisateur non trouvé', ['user_id' => $userId]);
+            
+            return [
+                'success' => false,
+                'message' => 'Utilisateur non trouvé',
+            ];
+
+        } catch (\Exception $e) {
+            Log::error('Erreur lors de la suppression de l\'utilisateur', [
+                'user_id' => $userId,
+                'error' => $e->getMessage(),
+            ]);
+
+            return [
+                'success' => false,
+                'message' => 'Une erreur est survenue lors de la suppression',
+            ];
+        }
+    }
 }

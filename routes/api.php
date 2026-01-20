@@ -42,6 +42,7 @@ Route::prefix('nkap')->group(function () {
         Route::get('/profil', [AuthController::class, 'profil']);
         Route::put('/profil', [AuthController::class, 'mettreAJourProfil']);
         Route::put('/mot-de-passe', [AuthController::class, 'changerMotDePasse']);
+        Route::delete('/utilisateur/{id}', [AuthController::class, 'supprimerUtilisateur']);
 
         // Transactions
         Route::post('/recharger', [TransactionController::class, 'recharger']);

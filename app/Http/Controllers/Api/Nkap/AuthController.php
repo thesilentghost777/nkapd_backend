@@ -73,4 +73,13 @@ class AuthController extends Controller
             $data['nouveau_mot_de_passe']
         ));
     }
+
+    public function supprimerUtilisateur(int $id)
+    {
+        Log::info('Suppression d\'utilisateur demandée', ['user_id' => $id]);
+        
+        $result = $this->authService->supprimerUtilisateur($id);
+        
+        return response()->json($result, $result['success'] ? 200 : 404);
+    }
 }
