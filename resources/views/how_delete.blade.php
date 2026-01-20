@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Suppression de compte - {{ config('app.name') }}</title>
+    <title>Suppression de compte - Business Room</title>
     <style>
         * {
             margin: 0;
@@ -232,8 +232,8 @@
         </div>
 
         <div class="app-info">
-            <strong>Application concernée :</strong> {{ config('app.name') }}<br>
-            <strong>Développeur :</strong> {{ config('app.name') }} Team<br>
+            <strong>Application concernée :</strong> Business Room<br>
+            <strong>Développeur :</strong> Business Room Team<br>
             <strong>Dernière mise à jour :</strong> {{ date('d/m/Y') }}
         </div>
 
@@ -262,13 +262,13 @@
 
             <div class="contact-box">
                 <h3>📧 Contactez notre service client</h3>
-                <a href="mailto:wilfrieddark2.0@gmail.com?subject=Suppression de compte - {{ config('app.name') }}&body=Bonjour,%0D%0A%0D%0AJe souhaite supprimer mon compte.%0D%0A%0D%0AEmail du compte : [Votre email]%0D%0AIdentifiant utilisateur : [Votre ID si connu]%0D%0A%0D%0AMerci." 
+                <a href="mailto:wilfrieddark2.0@gmail.com?subject=Suppression de compte - Business Room&body=Bonjour,%0D%0A%0D%0AJe souhaite supprimer mon compte.%0D%0A%0D%0AEmail du compte : [Votre email]%0D%0AIdentifiant utilisateur : [Votre ID si connu]%0D%0A%0D%0AMerci." 
                    class="email-button">
                     Envoyer un email de suppression
                 </a>
                 <div class="email-info">
                     <strong>Email :</strong> wilfrieddark2.0@gmail.com<br>
-                    <strong>Objet :</strong> Suppression de compte - {{ config('app.name') }}
+                    <strong>Objet :</strong> Suppression de compte - Business Room
                 </div>
             </div>
 
@@ -369,7 +369,7 @@
         </div>
 
         <div class="footer">
-            <p>&copy; {{ date('Y') }} {{ config('app.name') }}. Tous droits réservés.</p>
+            <p>&copy; {{ date('Y') }} Business Room. Tous droits réservés.</p>
             <p style="margin-top: 10px;">
                 <a href="{{ url('/') }}" style="color: #2196F3; text-decoration: none;">Retour à l'accueil</a> | 
                 <a href="mailto:wilfrieddark2.0@gmail.com" style="color: #2196F3; text-decoration: none;">Contact</a>
