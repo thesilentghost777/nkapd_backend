@@ -1,111 +1,140 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Business Room — Portail</title>
-    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <title>CFPAM COOPCA - Ensemble, rêvons plus grand</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
     <style>
-        body { font-family:'DM Sans',sans-serif; background:#0d0d0f; color:#e5e5e7; min-height:100vh; }
-        h1,h2,h3 { font-family:'Syne',sans-serif; }
-        .mesh { position:fixed; inset:0; background:radial-gradient(ellipse at 30% 60%, rgba(249,115,22,.1) 0%, transparent 55%), radial-gradient(ellipse at 70% 30%, rgba(234,88,12,.06) 0%, transparent 50%); pointer-events:none; }
-        .btn-primary { background:linear-gradient(135deg,#f97316,#ea580c); color:#fff; font-family:'Syne',sans-serif; font-weight:700; transition:all .2s; }
-        .btn-primary:hover { transform:translateY(-2px); box-shadow:0 16px 40px rgba(249,115,22,.4); }
-        .btn-ghost { border:1px solid rgba(255,255,255,.1); color:#e5e5e7; transition:all .2s; }
-        .btn-ghost:hover { border-color:#f97316; color:#f97316; }
-        .feature { background:rgba(22,22,24,.6); border:1px solid rgba(255,255,255,.06); border-radius:16px; }
-        @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-12px)} }
-        .float { animation:float 6s ease-in-out infinite; }
+        body {
+            font-family: 'Inter', sans-serif;
+        }
     </style>
 </head>
-<body>
-<div class="mesh"></div>
-<div class="relative min-h-screen flex flex-col">
-    <!-- Header -->
-    <header class="p-6 flex items-center justify-between">
-        <div class="flex items-center gap-3">
-            <div class="w-10 h-10 rounded-xl btn-primary flex items-center justify-center text-white font-bold text-xl">B</div>
-            <span style="font-family:Syne,sans-serif;font-weight:800" class="text-white text-xl">Business Room</span>
-        </div>
-        <div class="flex items-center gap-3">
-            <a href="{{ route('br.login') }}" class="btn-ghost px-4 py-2 rounded-xl text-sm">Connexion</a>
-            <a href="{{ route('br.register') }}" class="btn-primary px-4 py-2 rounded-xl text-sm">Rejoindre →</a>
-        </div>
-    </header>
+<body class="bg-gray-50">
 
-    <!-- Hero -->
-    <div class="flex-1 flex flex-col lg:flex-row items-center justify-center gap-16 px-6 py-16 max-w-6xl mx-auto w-full">
-        <div class="flex-1 text-center lg:text-left">
-            <span class="inline-block px-3 py-1 rounded-full text-xs font-medium bg-orange-500/15 text-orange-400 border border-orange-500/25 mb-6">🔥 Communauté Financière</span>
-            <h1 class="text-5xl lg:text-7xl font-800 text-white leading-none mb-6" style="font-family:Syne,sans-serif">
-                Épargnez.<br>
-                <span class="text-transparent bg-clip-text" style="background:linear-gradient(90deg,#f97316,#fbbf24)">Empruntez.</span><br>
-                Prospérez.
-            </h1>
-            <p class="text-gray-400 text-lg mb-10 max-w-lg">Rejoignez une communauté de confiance pour gérer vos tontines, obtenir des prêts et développer votre business.</p>
-            <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-                <a href="{{ route('br.register') }}" class="btn-primary px-8 py-4 rounded-2xl text-lg">Créer mon compte →</a>
-                <a href="{{ route('br.login') }}" class="btn-ghost px-8 py-4 rounded-2xl text-lg">J'ai déjà un compte</a>
-            </div>
-        </div>
+<div class="min-h-screen">
 
-        <div class="flex-1 float">
-            <div class="bg-gray-900 border border-gray-800 rounded-3xl p-6 max-w-sm mx-auto shadow-2xl">
-                <div class="flex items-center justify-between mb-6">
-                    <p class="text-xs text-gray-500 font-medium uppercase tracking-widest">Mon espace</p>
-                    <span class="w-2 h-2 bg-green-400 rounded-full"></span>
-                </div>
-                <div class="space-y-3 mb-6">
-                    <div class="bg-gray-800 rounded-2xl p-4 flex items-center gap-4">
-                        <div class="w-10 h-10 rounded-xl bg-orange-500/20 flex items-center justify-center text-orange-400 text-xl">💰</div>
-                        <div>
-                            <p class="text-xs text-gray-500">Épargne tontine</p>
-                            <p class="text-white font-bold" style="font-family:Syne,sans-serif">120 000 FCFA</p>
-                        </div>
-                    </div>
-                    <div class="bg-gray-800 rounded-2xl p-4 flex items-center gap-4">
-                        <div class="w-10 h-10 rounded-xl bg-green-500/20 flex items-center justify-center text-green-400 text-xl">📈</div>
-                        <div>
-                            <p class="text-xs text-gray-500">Filleuls actifs</p>
-                            <p class="text-white font-bold" style="font-family:Syne,sans-serif">3 filleuls</p>
-                        </div>
-                    </div>
-                    <div class="bg-gray-800 rounded-2xl p-4 flex items-center gap-4">
-                        <div class="w-10 h-10 rounded-xl bg-blue-500/20 flex items-center justify-center text-blue-400 text-xl">💳</div>
-                        <div>
-                            <p class="text-xs text-gray-500">Plafond prêt</p>
-                            <p class="text-white font-bold" style="font-family:Syne,sans-serif">150 000 FCFA</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="bg-gradient-to-r from-orange-600 to-orange-500 rounded-2xl p-4">
-                    <p class="text-white text-sm font-medium">Cotisation du jour</p>
-                    <p class="text-white/70 text-xs">Tontine journalière · 500 FCFA</p>
-                </div>
-            </div>
-        </div>
+    {{-- Hero Section --}}
+    <div class="text-center py-16 px-4">
+        <h1 class="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+            Ensemble, <span class="text-amber-600">Rêvons plus grand..</span>
+        </h1>
+        <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+            La coopérative d'appui multiforme qui transforme votre vie.
+        </p>
     </div>
 
-    <!-- Features -->
-    <div class="px-6 py-16 max-w-6xl mx-auto w-full">
+    {{-- Stats Banner --}}
+    <div class="max-w-6xl mx-auto px-4 mb-16">
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div class="feature p-6">
-                <div class="text-3xl mb-4">🤝</div>
-                <h3 class="text-white font-bold mb-2" style="font-family:Syne,sans-serif">Tontines digitales</h3>
-                <p class="text-gray-500 text-sm">Tontines journalières et hebdomadaires avec suivi en temps réel de votre épargne.</p>
+            <div class="bg-gradient-to-br from-amber-50 to-amber-100 rounded-2xl p-6 text-center">
+                <p class="text-3xl md:text-4xl font-bold text-amber-700">5000+</p>
+                <p class="text-gray-600 font-medium mt-1">Adhérents</p>
             </div>
-            <div class="feature p-6">
-                <div class="text-3xl mb-4">💸</div>
-                <h3 class="text-white font-bold mb-2" style="font-family:Syne,sans-serif">Prêts solidaires</h3>
-                <p class="text-gray-500 text-sm">Obtenez des prêts basés sur votre réseau de filleuls, jusqu'à 50 000 FCFA par filleul.</p>
+            <div class="bg-gradient-to-br from-green-50 to-green-100 rounded-2xl p-6 text-center">
+                <p class="text-3xl md:text-4xl font-bold text-green-700">100%</p>
+                <p class="text-gray-600 font-medium mt-1">Satisfaction</p>
             </div>
-            <div class="feature p-6">
-                <div class="text-3xl mb-4">🏪</div>
-                <h3 class="text-white font-bold mb-2" style="font-family:Syne,sans-serif">Marketplace business</h3>
-                <p class="text-gray-500 text-sm">Publiez et découvrez des produits et services au sein de la communauté.</p>
+            <div class="bg-gradient-to-br from-blue-50 to-blue-100 rounded-2xl p-6 text-center">
+                <p class="text-3xl md:text-4xl font-bold text-blue-700">5M+</p>
+                <p class="text-gray-600 font-medium mt-1">Projets financés</p>
             </div>
         </div>
     </div>
+
+    {{-- CTA Section --}}
+    <div class="max-w-4xl mx-auto px-4 mb-16">
+        <div class="bg-gradient-to-r from-amber-600 to-amber-700 rounded-2xl p-8 md:p-12 text-center">
+            <h2 class="text-2xl md:text-3xl font-bold text-white mb-4">Rejoindre Notre Coopérative</h2>
+            <a href="{{ route('br.register') }}" class="inline-block px-8 py-3 bg-white text-amber-700 font-semibold rounded-lg hover:bg-gray-100 transition shadow-lg">
+                Découvrir →
+            </a>
+        </div>
+    </div>
+
+    {{-- Avantages Section --}}
+    <div class="max-w-6xl mx-auto px-4 mb-16">
+        <h2 class="text-2xl md:text-3xl font-bold text-center text-gray-900 mb-4">Nos avantages</h2>
+        <p class="text-center text-gray-500 mb-10">Pourquoi choisir CFPAM COOP-CA ?</p>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {{-- Prêt flexible --}}
+            <div class="bg-white border border-gray-100 rounded-xl p-6 shadow-sm hover:shadow-md transition">
+                <div class="text-4xl mb-3">💰</div>
+                <h3 class="font-semibold text-lg text-gray-900 mb-2">Prêt et accompagnement flexibles</h3>
+                <p class="text-gray-600 text-sm mb-3">Deux formules NKD & NKH adaptées à votre capacité. Épargnez à votre rythme, sans pression.</p>
+                <div class="flex gap-2">
+                    <span class="px-3 py-1 bg-amber-100 text-amber-700 text-xs rounded-full font-medium">NKD</span>
+                    <span class="px-3 py-1 bg-amber-100 text-amber-700 text-xs rounded-full font-medium">NKH</span>
+                </div>
+            </div>
+
+            {{-- Financement accéléré --}}
+            <div class="bg-white border border-gray-100 rounded-xl p-6 shadow-sm hover:shadow-md transition">
+                <div class="text-4xl mb-3">⚡</div>
+                <h3 class="font-semibold text-lg text-gray-900 mb-2">Financement accéléré</h3>
+                <p class="text-gray-600 text-sm mb-3">Accédez à des fonds pour vos projets dès que votre score est atteint. Demande 100% digitale.</p>
+                <div class="inline-block px-3 py-1 bg-green-100 text-green-700 text-xs rounded-full font-medium">75% financé</div>
+            </div>
+
+            {{-- Journal de caisse --}}
+            <div class="bg-white border border-gray-100 rounded-xl p-6 shadow-sm hover:shadow-md transition">
+                <div class="text-4xl mb-3">📊</div>
+                <h3 class="font-semibold text-lg text-gray-900 mb-2">Journal de caisse</h3>
+                <p class="text-gray-600 text-sm">Gérez vos entrées et sorties d'argent en temps réel.</p>
+            </div>
+
+            {{-- Vitrine Business --}}
+            <div class="bg-white border border-gray-100 rounded-xl p-6 shadow-sm hover:shadow-md transition">
+                <div class="text-4xl mb-3">🏪</div>
+                <h3 class="font-semibold text-lg text-gray-900 mb-2">Vitrine Business</h3>
+                <p class="text-gray-600 text-sm">Publiez vos offres, touchez le réseau BUSINESS ROOM.</p>
+            </div>
+
+            {{-- Invitation & Score --}}
+            <div class="bg-white border border-gray-100 rounded-xl p-6 shadow-sm hover:shadow-md transition lg:col-span-2">
+                <div class="text-4xl mb-3">🎯</div>
+                <h3 class="font-semibold text-lg text-gray-900 mb-2">Invitation & Score</h3>
+                <p class="text-gray-600 text-sm">Invitez vos proches, gagnez des points et déverrouillez des avantages exclusifs.</p>
+            </div>
+        </div>
+    </div>
+
+    {{-- Adhésion rapide --}}
+    <div class="text-center mb-16">
+        <a href="{{ route('br.register') }}" class="inline-block px-8 py-3 bg-amber-600 text-white font-semibold rounded-lg hover:bg-amber-700 transition">
+            + Adhérer maintenant
+        </a>
+    </div>
+
+    {{-- Prêt à démarrer --}}
+    <div class="max-w-3xl mx-auto px-4 mb-16">
+        <h2 class="text-2xl font-bold text-center text-gray-900 mb-6">Prêt à démarrer ?</h2>
+        <p class="text-center text-gray-500 mb-8">Choisissez votre espace d'accès</p>
+
+        <div class="bg-white border border-gray-200 rounded-xl p-8 max-w-md mx-auto">
+            <h3 class="text-xl font-semibold text-gray-900 mb-4 text-center">Adhérents</h3>
+            <div class="space-y-3">
+                <a href="{{ route('br.register') }}" class="block w-full py-2.5 bg-amber-600 hover:bg-amber-700 text-white text-center rounded-lg font-medium transition">
+                    Créer un compte
+                </a>
+                <a href="{{ route('br.login') }}" class="block w-full py-2.5 border border-gray-300 hover:border-amber-400 text-gray-700 text-center rounded-lg font-medium transition">
+                    Se connecter
+                </a>
+            </div>
+            <p class="text-xs text-gray-400 text-center mt-4">Rejoindre la coopérative / J'ai déjà un compte</p>
+        </div>
+    </div>
+
+    {{-- Footer --}}
+    <footer class="text-center py-8 border-t border-gray-200 bg-white">
+        <p class="text-sm text-gray-400">© 2026 Business Room Final · Tous droits réservés</p>
+    </footer>
+
 </div>
+
 </body>
 </html>
