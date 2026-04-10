@@ -11,10 +11,11 @@ use App\Http\Controllers\BrFinal\CashbookController;
 use App\Http\Controllers\BrFinal\BusinessController;
 use App\Http\Controllers\BrFinal\AssistanceController;
 
+    Route::get('/', [AuthController::class, 'portail'])->name('br.portail');
+
 // ===== AUTH =====
 Route::prefix('br')->name('br.')->group(function () {
 
-    Route::get('/', [AuthController::class, 'portail'])->name('portail');
     Route::get('/login', [AuthController::class, 'loginForm'])->name('login');
     Route::post('/login', [AuthController::class, 'login']);
     Route::get('/register', [AuthController::class, 'registerForm'])->name('register');
