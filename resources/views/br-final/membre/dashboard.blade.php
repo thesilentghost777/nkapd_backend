@@ -110,19 +110,81 @@
         {{-- Parrainage --}}
         <div class="bg-white border border-gray-100 rounded-xl p-5 shadow-sm">
             <h2 class="font-semibold text-gray-900 mb-4">🤝 Mon parrainage</h2>
+            
+            {{-- Lien de parrainage avec bouton de copie --}}
             <div class="bg-gray-50 rounded-lg p-3 mb-4">
-                <p class="text-xs text-gray-400 mb-1">Lien de parrainage</p>
-                <p class="text-xs text-amber-600 font-mono break-all">{{ route('br.register', ['parrain' => $user->telephone]) }}</p>
+                <p class="text-xs text-gray-400 mb-2">Lien de parrainage</p>
+                <div class="flex items-center gap-2">
+                    <code id="sponsorLink" class="flex-1 text-xs text-amber-600 font-mono break-all bg-white p-2 rounded border border-gray-200">
+                        {{ route('br.register', ['parrain' => $user->telephone]) }}
+                    </code>
+                    <button onclick="copySponsorLink()" class="px-3 py-2 bg-amber-600 hover:bg-amber-700 text-white text-xs rounded-lg transition font-medium whitespace-nowrap">
+                        📋 Copier
+                    </button>
+                </div>
+                <p id="copyFeedback" class="text-xs text-green-600 mt-2 hidden">✓ Lien copié dans le presse-papier !</p>
             </div>
+
+            {{-- Code de parrainage à copier --}}
+            <div class="bg-gray-50 rounded-lg p-3 mb-4">
+                <p class="text-xs text-gray-400 mb-2">Code de parrainage (à partager)</p>
+                <div class="flex items-center gap-2">
+                    <code id="sponsorCode" class="flex-1 text-sm font-bold text-amber-600 bg-white p-2 rounded border border-gray-200 text-center">
+                        {{ $user->code_parrainage ?? $user->telephone }}
+                    </code>
+                    <button onclick="copySponsorCode()" class="px-3 py-2 bg-amber-600 hover:bg-amber-700 text-white text-xs rounded-lg transition font-medium whitespace-nowrap">
+                        📋 Copier
+                    </button>
+                </div>
+                <p id="copyCodeFeedback" class="text-xs text-green-600 mt-2 hidden">✓ Code copié dans le presse-papier !</p>
+            </div>
+
             <div class="flex justify-between text-sm py-1.5 border-b border-gray-100">
-                <span class="text-gray-400">Filleuls actifs</span><span class="font-semibold">{{ $stats['filleuls'] }}</span>
+                <span class="text-gray-400">Filleuls actifs</span>
+                <span class="font-semibold">{{ $stats['filleuls'] }}</span>
             </div>
             <div class="flex justify-between text-sm py-1.5">
-                <span class="text-gray-400">Plafond actuel</span><span class="text-amber-600 font-semibold">{{ number_format($stats['plafond_pret'],0,',',' ') }} FCFA</span>
+                <span class="text-gray-400">Plafond actuel</span>
+                <span class="text-amber-600 font-semibold">{{ number_format($stats['plafond_pret'],0,',',' ') }} FCFA</span>
             </div>
             <a href="{{ route('br.membre.profil') }}" class="block text-center text-xs text-gray-500 border border-gray-200 rounded-lg py-2 mt-4 hover:border-amber-200 hover:bg-amber-50 transition">Voir mon profil complet</a>
         </div>
 
     </div>
 </div>
+
+{{-- Script de copie --}}
+<script>
+function copySponsorLink() {
+    const linkElement = document.getElementById('sponsorLink');
+    const linkText = linkElement.textContent || linkElement.innerText;
+    
+    navigator.clipboard.writeText(linkText).then(function() {
+        const feedback = document.getElementById('copyFeedback');
+        feedback.classList.remove('hidden');
+        setTimeout(function() {
+            feedback.classList.add('hidden');
+        }, 2000);
+    }).catch(function(err) {
+        console.error('Erreur de copie: ', err);
+        alert('Impossible de copier le lien');
+    });
+}
+
+function copySponsorCode() {
+    const codeElement = document.getElementById('sponsorCode');
+    const codeText = codeElement.textContent || codeElement.innerText;
+    
+    navigator.clipboard.writeText(codeText).then(function() {
+        const feedback = document.getElementById('copyCodeFeedback');
+        feedback.classList.remove('hidden');
+        setTimeout(function() {
+            feedback.classList.add('hidden');
+        }, 2000);
+    }).catch(function(err) {
+        console.error('Erreur de copie: ', err);
+        alert('Impossible de copier le code');
+    });
+}
+</script>
 @endsection
