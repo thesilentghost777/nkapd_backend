@@ -11,7 +11,32 @@ use App\Http\Controllers\BrFinal\CashbookController;
 use App\Http\Controllers\BrFinal\BusinessController;
 use App\Http\Controllers\BrFinal\AssistanceController;
 
-    Route::get('/', [AuthController::class, 'portail'])->name('br.portail');
+
+// ===== ROUTE RACINE AVEC REDIRECTION =====
+Route::get('/', function () {
+    // Vérifier si l'utilisateur est connecté avec le guard brfinal
+    if (Auth::guard('brfinal')->check()) {
+        $user = Auth::guard('brfinal')->user();
+        
+        // Vérifier si c'est un admin
+        if ($user->role === 'admin') {
+            return redirect()->route('br.admin.dashboard');
+        }
+        
+        // Vérifier si c'est un membre (adherent)
+        if ($user->role === 'membre') {
+            return redirect()->route('br.membre.dashboard');
+        }
+    }
+    
+    // Si non connecté, rediriger vers le portail
+    return redirect()->route('br.portail');
+})->name('home');
+
+// Route pour le portail (page d'accueil publique)
+Route::get('/portail', [AuthController::class, 'portail'])->name('br.portail');
+
+
 
 // ===== AUTH =====
 Route::prefix('br')->name('br.')->group(function () {
