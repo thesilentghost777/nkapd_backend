@@ -15,20 +15,34 @@ class User extends Authenticatable
         'nom', 'prenom', 'telephone', 'email', 'password', 'role', 'statut',
         'solde_adhesion', 'adhesion_payee', 'photo', 'ville', 'quartier',
         'bio', 'whatsapp', 'derniere_connexion',
+        // OAuth / Firebase
+        'firebase_uid', 'google_id', 'apple_id', 'auth_provider',
+        // OTP
+        'otp_code', 'otp_expires_at', 'email_verified',
     ];
 
-    protected $hidden = ['password', 'remember_token'];
+    protected $hidden = ['password', 'remember_token', 'otp_code'];
 
     protected $casts = [
-        'adhesion_payee' => 'boolean',
-        'solde_adhesion' => 'decimal:2',
+        'adhesion_payee'   => 'boolean',
+        'email_verified'   => 'boolean',
+        'solde_adhesion'   => 'decimal:2',
         'derniere_connexion' => 'datetime',
+        'otp_expires_at'   => 'datetime',
     ];
+
+    // =============================================
+    //  ACCESSEURS
+    // =============================================
 
     public function getNomCompletAttribute(): string
     {
         return "{$this->prenom} {$this->nom}";
     }
+
+    // =============================================
+    //  MÉTHODES MÉTIER
+    // =============================================
 
     public function estMembre(): bool
     {
@@ -40,7 +54,41 @@ class User extends Authenticatable
         return $this->role === 'admin';
     }
 
-    // Relations
+    /** Vérifie si le compte a été créé via OAuth (pas de mot de passe requis) */
+    public function estOAuth(): bool
+    {
+        return in_array($this->auth_provider, ['google', 'apple']);
+    }
+
+    /** Génère et sauvegarde un OTP à 6 chiffres valable 10 minutes */
+    public function genererOtp(): string
+    {
+        $code = str_pad(random_int(0, 999999), 6, '0', STR_PAD_LEFT);
+        $this->update([
+            'otp_code'       => $code,
+            'otp_expires_at' => now()->addMinutes(10),
+        ]);
+        return $code;
+    }
+
+    /** Vérifie si le code OTP fourni est correct et non expiré */
+    public function verifierOtp(string $code): bool
+    {
+        return $this->otp_code === $code
+            && $this->otp_expires_at
+            && now()->lessThanOrEqualTo($this->otp_expires_at);
+    }
+
+    /** Invalide l'OTP après utilisation */
+    public function invaliderOtp(): void
+    {
+        $this->update(['otp_code' => null, 'otp_expires_at' => null]);
+    }
+
+    // =============================================
+    //  RELATIONS
+    // =============================================
+
     public function filleuls()
     {
         return $this->hasMany(Referral::class, 'parrain_id');
@@ -95,6 +143,10 @@ class User extends Authenticatable
     {
         return $this->hasMany(Payment::class);
     }
+
+    // =============================================
+    //  ACCESSEURS CALCULÉS
+    // =============================================
 
     public function getNbFilleulsActifsAttribute(): int
     {

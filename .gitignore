@@ -18,6 +18,7 @@
 /public/storage
 /storage/*.key
 /storage/pail
+/storage\app\firebase\tfs-app-90800-firebase-adminsdk-fbsvc-29205af1d9.json
 /vendor
 _ide_helper.php
 Homestead.json

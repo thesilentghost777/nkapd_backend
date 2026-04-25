@@ -2,139 +2,180 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>CFPAM COOPCA - Ensemble, rêvons plus grand</title>
+    <title>CFPAM COOPCA · Ensemble, rêvons plus grand</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <style>
+        * { box-sizing: border-box; }
         body {
-            font-family: 'Inter', sans-serif;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(160deg, #fff5f0 0%, #fde8da 40%, #faf0e6 100%);
+            min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
+            margin: 0;
         }
+        .spin-loader {
+            width: 16px; height: 16px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.75s linear infinite;
+            display: inline-block;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .btn-transition { transition: all 0.2s cubic-bezier(0.2, 0.9, 0.4, 1); }
     </style>
 </head>
-<body class="bg-gray-50">
+<body>
 
-<div class="min-h-screen">
+<div style="max-width: 480px; margin: 0 auto; padding: 0 0 48px;">
 
-    {{-- Hero Section --}}
-    <div class="text-center py-16 px-4">
-        <h1 class="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-            Ensemble, <span class="text-amber-600">Rêvons plus grand..</span>
+    {{-- Logo --}}
+    <div style="padding: 28px 24px 0; color: #E8541A; font-size: 13px; font-weight: 800; letter-spacing: 0.12em;">
+        BUSINESS ROOM
+    </div>
+
+    {{-- Hero --}}
+    <div style="padding: 32px 24px 28px;">
+        <h1 style="font-size: 42px; font-weight: 900; line-height: 1.08; color: #1a1a1a; margin: 0 0 16px;">
+            Ensemble,<br>
+            <span style="color: #E8541A;">rêvons<br>plus grand.</span>
         </h1>
-        <p class="text-lg text-gray-600 max-w-2xl mx-auto">
-            La coopérative d'appui multiforme qui transforme votre vie.
+        <p style="font-size: 15px; color: #6b6b6b; line-height: 1.6; margin: 0;">
+            La coopérative d'appui multiforme<br>qui transforme votre vie.
         </p>
     </div>
 
-    {{-- Stats Banner --}}
-    <div class="max-w-6xl mx-auto px-4 mb-16">
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div class="bg-gradient-to-br from-amber-50 to-amber-100 rounded-2xl p-6 text-center">
-                <p class="text-3xl md:text-4xl font-bold text-amber-700">5000+</p>
-                <p class="text-gray-600 font-medium mt-1">Adhérents</p>
-            </div>
-            <div class="bg-gradient-to-br from-green-50 to-green-100 rounded-2xl p-6 text-center">
-                <p class="text-3xl md:text-4xl font-bold text-green-700">100%</p>
-                <p class="text-gray-600 font-medium mt-1">Satisfaction</p>
-            </div>
-            <div class="bg-gradient-to-br from-blue-50 to-blue-100 rounded-2xl p-6 text-center">
-                <p class="text-3xl md:text-4xl font-bold text-blue-700">5M+</p>
-                <p class="text-gray-600 font-medium mt-1">Projets financés</p>
-            </div>
+    {{-- Stats --}}
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 0 24px 28px;">
+        <div style="background: white; border-radius: 18px; padding: 20px 14px; text-align: center;">
+            <div style="font-size: 28px; font-weight: 900; color: #E8541A;">5 000+</div>
+            <div style="font-size: 10px; font-weight: 600; letter-spacing: 0.08em; color: #888; text-transform: uppercase; margin-top: 4px;">Adhérents</div>
+        </div>
+        <div style="background: white; border-radius: 18px; padding: 20px 14px; text-align: center;">
+            <div style="font-size: 28px; font-weight: 900; color: #16a34a;">100%</div>
+            <div style="font-size: 10px; font-weight: 600; letter-spacing: 0.08em; color: #888; text-transform: uppercase; margin-top: 4px;">Satisfaction</div>
+        </div>
+        <div style="background: white; border-radius: 18px; padding: 20px 14px; text-align: center; grid-column: 1 / -1;">
+            <div style="font-size: 28px; font-weight: 900; color: #1d6fba;">5M+ FCFA</div>
+            <div style="font-size: 10px; font-weight: 600; letter-spacing: 0.08em; color: #888; text-transform: uppercase; margin-top: 4px;">Projets financés</div>
         </div>
     </div>
 
-    {{-- CTA Section --}}
-    <div class="max-w-4xl mx-auto px-4 mb-16">
-        <div class="bg-gradient-to-r from-amber-600 to-amber-700 rounded-2xl p-8 md:p-12 text-center">
-            <h2 class="text-2xl md:text-3xl font-bold text-white mb-4">Rejoindre Notre Coopérative</h2>
-            <a href="{{ route('br.register') }}" class="inline-block px-8 py-3 bg-white text-amber-700 font-semibold rounded-lg hover:bg-gray-100 transition shadow-lg">
-                Découvrir →
-            </a>
-        </div>
-    </div>
-
-    {{-- Avantages Section --}}
-    <div class="max-w-6xl mx-auto px-4 mb-16">
-        <h2 class="text-2xl md:text-3xl font-bold text-center text-gray-900 mb-4">Nos avantages</h2>
-        <p class="text-center text-gray-500 mb-10">Pourquoi choisir CFPAM COOP-CA ?</p>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {{-- Prêt flexible --}}
-            <div class="bg-white border border-gray-100 rounded-xl p-6 shadow-sm hover:shadow-md transition">
-                <div class="text-4xl mb-3">💰</div>
-                <h3 class="font-semibold text-lg text-gray-900 mb-2">Prêt et accompagnement flexibles</h3>
-                <p class="text-gray-600 text-sm mb-3">Deux formules NKD & NKH adaptées à votre capacité. Épargnez à votre rythme, sans pression.</p>
-                <div class="flex gap-2">
-                    <span class="px-3 py-1 bg-amber-100 text-amber-700 text-xs rounded-full font-medium">NKD</span>
-                    <span class="px-3 py-1 bg-amber-100 text-amber-700 text-xs rounded-full font-medium">NKH</span>
-                </div>
-            </div>
-
-            {{-- Financement accéléré --}}
-            <div class="bg-white border border-gray-100 rounded-xl p-6 shadow-sm hover:shadow-md transition">
-                <div class="text-4xl mb-3">⚡</div>
-                <h3 class="font-semibold text-lg text-gray-900 mb-2">Financement accéléré</h3>
-                <p class="text-gray-600 text-sm mb-3">Accédez à des fonds pour vos projets dès que votre score est atteint. Demande 100% digitale.</p>
-                <div class="inline-block px-3 py-1 bg-green-100 text-green-700 text-xs rounded-full font-medium">75% financé</div>
-            </div>
-
-            {{-- Journal de caisse --}}
-            <div class="bg-white border border-gray-100 rounded-xl p-6 shadow-sm hover:shadow-md transition">
-                <div class="text-4xl mb-3">📊</div>
-                <h3 class="font-semibold text-lg text-gray-900 mb-2">Journal de caisse</h3>
-                <p class="text-gray-600 text-sm">Gérez vos entrées et sorties d'argent en temps réel.</p>
-            </div>
-
-            {{-- Vitrine Business --}}
-            <div class="bg-white border border-gray-100 rounded-xl p-6 shadow-sm hover:shadow-md transition">
-                <div class="text-4xl mb-3">🏪</div>
-                <h3 class="font-semibold text-lg text-gray-900 mb-2">Vitrine Business</h3>
-                <p class="text-gray-600 text-sm">Publiez vos offres, touchez le réseau BUSINESS ROOM.</p>
-            </div>
-
-            {{-- Invitation & Score --}}
-            <div class="bg-white border border-gray-100 rounded-xl p-6 shadow-sm hover:shadow-md transition lg:col-span-2">
-                <div class="text-4xl mb-3">🎯</div>
-                <h3 class="font-semibold text-lg text-gray-900 mb-2">Invitation & Score</h3>
-                <p class="text-gray-600 text-sm">Invitez vos proches, gagnez des points et déverrouillez des avantages exclusifs.</p>
-            </div>
-        </div>
-    </div>
-
-    {{-- Adhésion rapide --}}
-    <div class="text-center mb-16">
-        <a href="{{ route('br.register') }}" class="inline-block px-8 py-3 bg-amber-600 text-white font-semibold rounded-lg hover:bg-amber-700 transition">
-            + Adhérer maintenant
+    {{-- CTA Banner --}}
+    <div style="margin: 0 24px 32px; background: #E8541A; border-radius: 24px; padding: 32px 24px; text-align: center;">
+        <h2 style="color: white; font-size: 22px; font-weight: 800; margin: 0 0 18px;">
+            Rejoignez Notre Coopérative
+        </h2>
+        <a href="{{ route('br.register') }}"
+           id="ctaDiscoverBtn"
+           class="btn-transition"
+           style="display: inline-flex; align-items: center; gap: 8px; background: white; color: #E8541A; font-weight: 800; font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase; border-radius: 50px; padding: 14px 28px; text-decoration: none;">
+            <span id="ctaDiscoverText">Découvrir</span>
+            <span id="ctaDiscoverLoader" class="spin-loader" style="display:none; border-top-color: #E8541A; border-color: rgba(232,84,26,0.2);"></span>
+            <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/>
+            </svg>
         </a>
     </div>
 
-    {{-- Prêt à démarrer --}}
-    <div class="max-w-3xl mx-auto px-4 mb-16">
-        <h2 class="text-2xl font-bold text-center text-gray-900 mb-6">Prêt à démarrer ?</h2>
-        <p class="text-center text-gray-500 mb-8">Choisissez votre espace d'accès</p>
+    {{-- Avantages --}}
+    <div style="padding: 0 24px;">
+        <h2 style="font-size: 24px; font-weight: 800; color: #1a1a1a; margin: 0 0 4px;">Nos avantages</h2>
+        <p style="font-size: 13px; color: #888; margin: 0 0 18px;">Pourquoi choisir CFPAM COOP-CA ?</p>
 
-        <div class="bg-white border border-gray-200 rounded-xl p-8 max-w-md mx-auto">
-            <h3 class="text-xl font-semibold text-gray-900 mb-4 text-center">Adhérents</h3>
-            <div class="space-y-3">
-                <a href="{{ route('br.register') }}" class="block w-full py-2.5 bg-amber-600 hover:bg-amber-700 text-white text-center rounded-lg font-medium transition">
-                    Créer un compte
-                </a>
-                <a href="{{ route('br.login') }}" class="block w-full py-2.5 border border-gray-300 hover:border-amber-400 text-gray-700 text-center rounded-lg font-medium transition">
-                    Se connecter
-                </a>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 32px;">
+
+            <div style="background: white; border-radius: 18px; padding: 18px 14px;">
+                <div style="font-size: 26px; margin-bottom: 8px;">💰</div>
+                <h3 style="font-size: 13px; font-weight: 700; color: #1a1a1a; margin: 0 0 6px;">Prêt flexible</h3>
+                <p style="font-size: 11px; color: #777; line-height: 1.5; margin: 0 0 8px;">Formules NKD & NKH à votre rythme, sans pression.</p>
+                <span style="display:inline-block; background:#fff4ef; color:#E8541A; font-size:10px; font-weight:700; border-radius:50px; padding:4px 10px;">NKD</span>
+                <span style="display:inline-block; background:#fff4ef; color:#E8541A; font-size:10px; font-weight:700; border-radius:50px; padding:4px 10px; margin-left:4px;">NKH</span>
             </div>
-            <p class="text-xs text-gray-400 text-center mt-4">Rejoindre la coopérative / J'ai déjà un compte</p>
+
+            <div style="background: white; border-radius: 18px; padding: 18px 14px;">
+                <div style="font-size: 26px; margin-bottom: 8px;">⚡</div>
+                <h3 style="font-size: 13px; font-weight: 700; color: #1a1a1a; margin: 0 0 6px;">Financement rapide</h3>
+                <p style="font-size: 11px; color: #777; line-height: 1.5; margin: 0 0 8px;">Demande 100% digitale. Fonds débloqués dès votre score.</p>
+                <span style="display:inline-block; background:#f0fdf4; color:#16a34a; font-size:10px; font-weight:700; border-radius:50px; padding:4px 10px;">75% financé</span>
+            </div>
+
+            <div style="background: white; border-radius: 18px; padding: 18px 14px;">
+                <div style="font-size: 26px; margin-bottom: 8px;">📊</div>
+                <h3 style="font-size: 13px; font-weight: 700; color: #1a1a1a; margin: 0 0 6px;">Journal de caisse</h3>
+                <p style="font-size: 11px; color: #777; line-height: 1.5; margin: 0;">Suivi en temps réel de vos flux financiers.</p>
+            </div>
+
+            <div style="background: white; border-radius: 18px; padding: 18px 14px;">
+                <div style="font-size: 26px; margin-bottom: 8px;">🏪</div>
+                <h3 style="font-size: 13px; font-weight: 700; color: #1a1a1a; margin: 0 0 6px;">Vitrine Business</h3>
+                <p style="font-size: 11px; color: #777; line-height: 1.5; margin: 0;">Publiez vos offres dans tout le réseau BUSINESS ROOM.</p>
+            </div>
+
+            <div style="background: white; border-radius: 18px; padding: 18px 14px; grid-column: 1 / -1;">
+                <div style="font-size: 26px; margin-bottom: 8px;">🎯</div>
+                <h3 style="font-size: 13px; font-weight: 700; color: #1a1a1a; margin: 0 0 6px;">Invitation & Score</h3>
+                <p style="font-size: 11px; color: #777; line-height: 1.5; margin: 0;">Invitez vos proches, gagnez des points et déverrouillez des avantages exclusifs dans tout le réseau.</p>
+            </div>
+
         </div>
     </div>
 
+    {{-- Adhésion --}}
+    <div style="margin: 0 24px 32px; background: white; border-radius: 24px; padding: 32px 20px;">
+        <h3 style="text-align: center; font-size: 22px; font-weight: 800; color: #1a1a1a; margin: 0 0 24px;">Prêt à démarrer ?</h3>
+
+        <a href="{{ route('br.register') }}"
+           id="registerBtn"
+           class="btn-transition"
+           style="display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; background: #E8541A; color: white; font-size: 13px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; border-radius: 50px; padding: 17px; text-decoration: none; margin-bottom: 12px;">
+            <span id="registerText">+ Adhérer maintenant</span>
+            <span id="registerLoader" class="spin-loader" style="display:none;"></span>
+        </a>
+
+        <a href="{{ route('br.login') }}"
+           id="loginBtn"
+           class="btn-transition"
+           style="display: flex; align-items: center; justify-content: center; width: 100%; background: transparent; color: #1a1a1a; font-size: 13px; font-weight: 600; border: 1.5px solid #e2e2e2; border-radius: 50px; padding: 15px; text-decoration: none;">
+            <span id="loginText">Se connecter</span>
+            <span id="loginLoader" class="spin-loader" style="display:none; border-top-color: #E8541A; border-color: rgba(232,84,26,0.2);"></span>
+        </a>
+
+        <p style="text-align: center; font-size: 11px; color: #aaa; margin: 16px 0 0;">
+            Rejoindre la coopérative · J'ai déjà un compte
+        </p>
+    </div>
+
     {{-- Footer --}}
-    <footer class="text-center py-8 border-t border-gray-200 bg-white">
-        <p class="text-sm text-gray-400">© 2026 Business Room Final · Tous droits réservés</p>
+    <footer style="text-align: center; padding: 0 24px; font-size: 11px; color: #aaa;">
+        © 2026 Business Room Final · Tous droits réservés
     </footer>
 
 </div>
+
+<script>
+(function() {
+    "use strict";
+    function setupLoader(btnId, loaderId, textId) {
+        const btn = document.getElementById(btnId);
+        if (!btn) return;
+        btn.addEventListener('click', function() {
+            const loader = document.getElementById(loaderId);
+            const text = document.getElementById(textId);
+            if (loader) loader.style.display = 'inline-block';
+            if (text) text.style.opacity = '0.7';
+            btn.style.pointerEvents = 'none';
+            btn.style.opacity = '0.8';
+        });
+    }
+    setupLoader('ctaDiscoverBtn', 'ctaDiscoverLoader', 'ctaDiscoverText');
+    setupLoader('registerBtn', 'registerLoader', 'registerText');
+    setupLoader('loginBtn', 'loginLoader', 'loginText');
+})();
+</script>
 
 </body>
 </html>

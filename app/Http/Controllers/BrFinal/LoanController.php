@@ -11,20 +11,35 @@ class LoanController extends Controller
 {
     public function index()
     {
-        $user = auth('brfinal')->user();
-        $pretActif = $user->loans()->whereIn('statut', ['en_attente', 'approuve', 'en_cours', 'en_retard'])->first();
+        $user       = auth('brfinal')->user();
+        $pretActif  = $user->loans()->whereIn('statut', ['en_attente', 'approuve', 'en_cours', 'en_retard'])->first();
         $historique = $user->loans()->whereIn('statut', ['rembourse', 'rejete'])->latest()->get();
+
+        // Recalcul des pénalités à la volée pour le prêt actif
+        if ($pretActif && in_array($pretActif->statut, ['en_cours', 'en_retard'])) {
+            app(LoanService::class)->calculerPenalitesPret($pretActif);
+            $pretActif->refresh();
+        }
 
         return view('br-final.membre.pret.index', compact('pretActif', 'historique', 'user'));
     }
 
     public function demander(Request $request, LoanService $service)
     {
-        $request->validate(['montant' => 'required|numeric|min:10000']);
+        $request->validate([
+            'montant'      => 'required|numeric|min:10000',
+            'duree_valeur' => 'required|integer|min:1|max:365',
+            'duree_unite'  => 'required|in:jours,mois',
+        ]);
 
         try {
-            $service->demanderPret(auth('brfinal')->user(), $request->montant);
-            return back()->with('success', 'Demande de prêt envoyée.');
+            $service->demanderPret(
+                auth('brfinal')->user(),
+                $request->montant,
+                (int) $request->duree_valeur,
+                $request->duree_unite
+            );
+            return back()->with('success', 'Demande de prêt envoyée. L\'admin examinera votre dossier sous peu.');
         } catch (\Exception $e) {
             return back()->with('error', $e->getMessage());
         }
@@ -34,8 +49,13 @@ class LoanController extends Controller
     {
         $request->validate(['montant' => 'required|numeric|min:1000']);
 
+        // Vérifier que ce prêt appartient à l'utilisateur connecté
+        if ($loan->user_id !== auth('brfinal')->id()) {
+            abort(403);
+        }
+
         try {
-            $result = $service->rembourser($loan, $request->montant);
+            $result = $service->rembourser($loan, (float) $request->montant);
             return redirect($result['url']);
         } catch (\Exception $e) {
             return back()->with('error', $e->getMessage());

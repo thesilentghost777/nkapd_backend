@@ -14,6 +14,13 @@ return [
     |
     */
 
+    'firebase' => [
+    'web_api_key'          => env('FIREBASE_WEB_API_KEY'),
+    'project_id'           => env('FIREBASE_PROJECT_ID'),
+    'messaging_sender_id'  => env('FIREBASE_MESSAGE_SENDER_ID'),
+    'app_id'               => env('FIREBASE_APP_ID'),
+],
+
     'moneyfusion.api_url' => env('MONEYFUSION_API_URL'),
     
     'postmark' => [

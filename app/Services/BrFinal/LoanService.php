@@ -2,155 +2,265 @@
 
 namespace App\Services\BrFinal;
 
-use App\Models\BrFinal\User;
 use App\Models\BrFinal\Loan;
-use App\Models\BrFinal\LoanRepayment;
+use App\Models\BrFinal\User;
 use App\Models\BrFinal\Payment;
-use App\Models\BrFinal\Notification;
+use Carbon\Carbon;
+use Illuminate\Support\Str;
 
 class LoanService
 {
-    protected MoneyFusionService $mf;
+    // =============================================
+    //  CONSTANTES
+    // =============================================
 
-    public function __construct(MoneyFusionService $mf)
-    {
-        $this->mf = $mf;
-    }
+    const TAUX_INTERET          = 10.00; // 10% (intérêt fixe)
+    const TAUX_ASSURANCE        = 6.50;  // 6.5%
+    const FRAIS_DOSSIER_PCT     = 3.00;  // 3% prélevés au déblocage
+    const PENALITE_NORMAL_JOUR  = 0.10;  // 0.1% / jour tant que crédit actif
+    const PENALITE_NORMAL_MOIS  = 2.00;  // 2% / mois tant que crédit actif
+    const PENALITE_RETARD_JOUR  = 1.00;  // 1% / jour après la deadline
+    const PENALITE_RETARD_MOIS  = 2.00;  // 2% / mois (inchangé)
 
-    public function demanderPret(User $user, float $montant): Loan
+    // =============================================
+    //  DEMANDE DE PRÊT
+    // =============================================
+
+    /**
+     * Crée une demande de prêt.
+     *
+     * @param  User   $user
+     * @param  float  $montant
+     * @param  int    $dureeValeur  ex: 30 (jours) ou 3 (mois)
+     * @param  string $dureeUnite   'jours' | 'mois'
+     */
+    public function demanderPret(User $user, float $montant, int $dureeValeur, string $dureeUnite): Loan
     {
+        // --- Vérifications ---
         if (!$user->estMembre()) {
-            throw new \Exception('Vous devez être membre pour demander un prêt.');
+            throw new \Exception('Vous devez être membre actif (adhésion payée) pour demander un prêt.');
         }
 
-        $nbFilleuls = $user->nb_filleuls_actifs;
-        if ($nbFilleuls < 1) {
-            throw new \Exception('Vous devez avoir au moins 1 filleul actif.');
+        if ($user->nb_filleuls_actifs < 1) {
+            throw new \Exception('Vous devez avoir au moins 1 filleul actif pour demander un prêt.');
         }
 
-        $plafond = $nbFilleuls * 50000;
+        $plafond = $user->plafond_pret;
         if ($montant > $plafond) {
-            throw new \Exception("Votre plafond est de " . number_format($plafond, 0, ',', ' ') . " FCFA ({$nbFilleuls} filleul(s)).");
+            throw new \Exception("Le montant demandé dépasse votre plafond de " . number_format($plafond, 0, ',', ' ') . " FCFA.");
         }
 
-        // Vérifier pas de prêt en cours
-        $pretEnCours = $user->loans()->whereIn('statut', ['en_attente', 'approuve', 'en_cours'])->exists();
-        if ($pretEnCours) {
-            throw new \Exception('Vous avez déjà un prêt en cours.');
+        $pretActif = $user->loans()->whereIn('statut', ['en_attente', 'approuve', 'en_cours', 'en_retard'])->first();
+        if ($pretActif) {
+            throw new \Exception('Vous avez déjà un prêt actif en cours.');
         }
 
-        $calcul = Loan::calculerMontantTotal($montant);
+        if (!in_array($dureeUnite, ['jours', 'mois'])) {
+            throw new \Exception('Unité de durée invalide.');
+        }
 
+        if ($dureeValeur < 1) {
+            throw new \Exception('La durée doit être d\'au moins 1 jour ou 1 mois.');
+        }
+
+        // --- Calcul du montant total dû ---
+        // Intérêt fixe de 10% + assurance 6.5% sur le montant accordé
+        $interet   = $montant * (self::TAUX_INTERET / 100);
+        $assurance = $montant * (self::TAUX_ASSURANCE / 100);
+        $totalDu   = $montant + $interet + $assurance;
+
+        // Frais de dossier 3% (déduits au déblocage)
+        $fraisDossier  = $montant * (self::FRAIS_DOSSIER_PCT / 100);
+        $montantNetVerse = $montant - $fraisDossier;
+
+        // --- Création du prêt ---
         return Loan::create([
-            'user_id' => $user->id,
-            'montant_demande' => $montant,
-            'montant_total_du' => $calcul['total'],
-            'nb_filleuls_au_moment' => $nbFilleuls,
-            'plafond_calcule' => $plafond,
+            'user_id'               => $user->id,
+            'montant_demande'       => $montant,
+            'montant_accorde'       => null, // renseigné à l'approbation
+            'montant_net_verse'     => null, // renseigné à l'approbation
+            'frais_dossier'         => $fraisDossier,
+            'taux_interet'          => self::TAUX_INTERET,
+            'taux_assurance'        => self::TAUX_ASSURANCE,
+            'montant_total_du'      => null, // renseigné à l'approbation
+            'montant_rembourse'     => 0,
+            'penalites'             => 0,
+            'taux_penalite_jour'    => self::PENALITE_NORMAL_JOUR,
+            'taux_penalite_mois'    => self::PENALITE_NORMAL_MOIS,
+            'nb_filleuls_au_moment' => $user->nb_filleuls_actifs,
+            'plafond_calcule'       => $plafond,
+            'statut'                => 'en_attente',
+            'duree_valeur'          => $dureeValeur,
+            'duree_unite'           => $dureeUnite,
         ]);
     }
 
-    public function approuverPret(Loan $loan, float $montantAccorde = null): void
-    {
-        if ($loan->statut !== 'en_attente') {
-            throw new \Exception('Ce prêt ne peut pas être approuvé.');
-        }
+    // =============================================
+    //  APPROBATION ADMIN
+    // =============================================
 
-        $montant = $montantAccorde ?? $loan->montant_demande;
-        $calcul = Loan::calculerMontantTotal($montant);
+    /**
+     * Approuve un prêt et calcule l'échéance et le montant total dû.
+     */
+    public function approuver(Loan $loan, float $montantAccorde): void
+    {
+        $interet   = $montantAccorde * ($loan->taux_interet / 100);
+        $assurance = $montantAccorde * ($loan->taux_assurance / 100);
+        $totalDu   = $montantAccorde + $interet + $assurance;
+
+        $fraisDossier    = $montantAccorde * (self::FRAIS_DOSSIER_PCT / 100);
+        $montantNetVerse = $montantAccorde - $fraisDossier;
+
+        // Calcul de l'échéance selon la durée choisie
+        if ($loan->duree_unite === 'mois') {
+            $echeance = Carbon::today()->addMonths($loan->duree_valeur);
+        } else {
+            $echeance = Carbon::today()->addDays($loan->duree_valeur);
+        }
 
         $loan->update([
-            'montant_accorde' => $montant,
-            'montant_total_du' => $calcul['total'],
-            'statut' => 'en_cours',
-            'date_approbation' => now(),
-            'date_echeance' => now()->addMonths(6),
+            'montant_accorde'              => $montantAccorde,
+            'montant_net_verse'            => $montantNetVerse,
+            'frais_dossier'                => $fraisDossier,
+            'montant_total_du'             => $totalDu,
+            'statut'                       => 'approuve',
+            'date_approbation'             => Carbon::today(),
+            'date_echeance'                => $echeance,
+            'date_dernier_calcul_penalite' => Carbon::today(),
         ]);
-
-        Notification::envoyer($loan->user_id, 'Prêt approuvé',
-            "Votre prêt de " . number_format($montant, 0, ',', ' ') . " FCFA a été approuvé.", 'success');
     }
 
-    public function rejeterPret(Loan $loan, string $motif): void
+    // =============================================
+    //  CALCUL DES PÉNALITÉS (à appeler quotidiennement via un job)
+    // =============================================
+
+    /**
+     * Calcule et applique les pénalités pour tous les prêts actifs.
+     * À appeler depuis un Command/Job planifié (Schedule::daily).
+     */
+    public function calculerPenalitesQuotidiennes(): void
     {
-        $loan->update(['statut' => 'rejete', 'motif_refus' => $motif]);
-        Notification::envoyer($loan->user_id, 'Prêt refusé', "Motif : {$motif}", 'danger');
-    }
+        $prets = Loan::whereIn('statut', ['en_cours', 'en_retard'])->get();
 
-    public function rembourser(Loan $loan, float $montant): array
-    {
-        if (!in_array($loan->statut, ['en_cours', 'en_retard'])) {
-            throw new \Exception('Ce prêt ne peut pas être remboursé.');
+        foreach ($prets as $loan) {
+            $this->calculerPenalitesPret($loan);
         }
-
-        $reste = $loan->reste_a_payer;
-        if ($montant > $reste) $montant = $reste;
-
-        $user = $loan->user;
-
-        $repayment = LoanRepayment::create([
-            'loan_id' => $loan->id,
-            'user_id' => $user->id,
-            'montant' => $montant,
-            'date_paiement' => now()->toDateString(),
-            'statut' => 'pending',
-        ]);
-
-        $payment = Payment::create([
-            'user_id' => $user->id,
-            'type' => 'remboursement',
-            'payable_type' => LoanRepayment::class,
-            'payable_id' => $repayment->id,
-            'montant' => $montant,
-            'numero_telephone' => $user->telephone,
-            'nom_client' => $user->nom_complet,
-            'personal_info' => ['loan_id' => $loan->id],
-        ]);
-
-        $result = $this->mf->initierPaiement([
-            'montant' => $montant,
-            'telephone' => $user->telephone,
-            'nom_client' => $user->nom_complet,
-            'type' => 'remboursement',
-            'reference' => $payment->reference,
-            'user_id' => $user->id,
-            'description' => "Remboursement prêt #{$loan->id}",
-            'return_url' => route('br.membre.pret.index'),
-        ]);
-
-        if ($result['success']) {
-            $payment->update(['token_paiement' => $result['token'], 'url_paiement' => $result['url']]);
-            $repayment->update(['token_paiement' => $result['token']]);
-            return ['success' => true, 'url' => $result['url']];
-        }
-
-        $repayment->update(['statut' => 'failure']);
-        $payment->update(['statut' => 'failure']);
-        throw new \Exception($result['message']);
     }
 
     /**
-     * CRON: Appliquer pénalités de retard (10%)
+     * Calcule les pénalités pour un prêt donné depuis le dernier calcul.
      */
-    public function appliquerPenalites(): int
+    public function calculerPenalitesPret(Loan $loan): void
     {
-        $count = 0;
-        $loans = Loan::where('statut', 'en_cours')
-            ->where('date_echeance', '<', now())
-            ->get();
+        $dernierCalcul = $loan->date_dernier_calcul_penalite
+            ? Carbon::parse($loan->date_dernier_calcul_penalite)
+            : Carbon::parse($loan->date_approbation ?? $loan->created_at);
 
-        foreach ($loans as $loan) {
-            $reste = $loan->reste_a_payer;
-            $penalite = round($reste * 0.10, 0);
-            $loan->update([
-                'statut' => 'en_retard',
-                'penalites' => $loan->penalites + $penalite,
-                'montant_total_du' => $loan->montant_total_du + $penalite,
-            ]);
-            Notification::envoyer($loan->user_id, 'Pénalité de retard',
-                "Une pénalité de " . number_format($penalite, 0, ',', ' ') . " FCFA a été appliquée.", 'warning');
-            $count++;
+        $today      = Carbon::today();
+        $echeance   = $loan->date_echeance ? Carbon::parse($loan->date_echeance) : null;
+
+        if ($dernierCalcul->greaterThanOrEqualTo($today)) {
+            return; // Déjà calculé aujourd'hui
         }
-        return $count;
+
+        $penalitesAjoutees   = 0;
+        $joursTotal          = $dernierCalcul->diffInDays($today);
+        $base                = $loan->montant_total_du ?? 0;
+
+        for ($i = 1; $i <= $joursTotal; $i++) {
+            $jour = $dernierCalcul->copy()->addDays($i);
+
+            // Taux selon si on est avant ou après l'échéance
+            $enRetard = $echeance && $jour->greaterThan($echeance);
+
+            $tauxJour  = $enRetard ? self::PENALITE_RETARD_JOUR  : self::PENALITE_NORMAL_JOUR;
+            $tauxMois  = self::PENALITE_NORMAL_MOIS; // 2% / mois toujours
+
+            // Pénalité journalière
+            $penalitesAjoutees += $base * ($tauxJour / 100);
+
+            // Pénalité mensuelle (1er du mois)
+            if ($jour->day === 1) {
+                $penalitesAjoutees += $base * ($tauxMois / 100);
+            }
+        }
+
+        // Mise à jour du statut si en retard
+        $nouveauStatut = ($echeance && $today->greaterThan($echeance)) ? 'en_retard' : $loan->statut;
+
+        $loan->update([
+            'penalites'                    => $loan->penalites + $penalitesAjoutees,
+            'statut'                       => $nouveauStatut,
+            'date_dernier_calcul_penalite' => $today,
+            // Mise à jour des taux pour l'affichage
+            'taux_penalite_jour'           => ($echeance && $today->greaterThan($echeance))
+                                                 ? self::PENALITE_RETARD_JOUR
+                                                 : self::PENALITE_NORMAL_JOUR,
+        ]);
+    }
+
+    // =============================================
+    //  REMBOURSEMENT
+    // =============================================
+
+    /**
+     * Initie un remboursement via MoneyFusion.
+     *
+     * @return array ['url' => string]
+     */
+    public function rembourser(Loan $loan, float $montant): array
+    {
+        if (!in_array($loan->statut, ['en_cours', 'en_retard'])) {
+            throw new \Exception('Ce prêt ne peut pas être remboursé dans son état actuel.');
+        }
+
+        $resteAPayer = $loan->reste_a_payer;
+        if ($montant > $resteAPayer) {
+            throw new \Exception("Le montant saisi dépasse le reste à payer (" . number_format($resteAPayer, 0, ',', ' ') . " FCFA).");
+        }
+
+        // Création du paiement
+        $reference = 'LR-' . strtoupper(Str::random(10));
+
+        $repayment = $loan->repayments()->create([
+            'user_id'        => $loan->user_id,
+            'montant'        => $montant,
+            'date_paiement'  => now()->toDateString(),
+            'statut'         => 'pending',
+            'token_paiement' => $reference,
+        ]);
+
+        $payment = Payment::create([
+            'reference'        => $reference,
+            'user_id'          => $loan->user_id,
+            'type'             => 'remboursement',
+            'payable_type'     => get_class($repayment),
+            'payable_id'       => $repayment->id,
+            'montant'          => $montant,
+            'token_paiement'   => $reference,
+            'statut'           => 'pending',
+        ]);
+
+        // Intégration MoneyFusion (remplacer par votre implémentation réelle)
+        $paymentService = app(PaymentService::class);
+        $result = $paymentService->initierPaiement($payment, $loan->user);
+
+        return ['url' => $result['url']];
+    }
+
+    // =============================================
+    //  WEBHOOK : confirmer un remboursement
+    // =============================================
+
+    public function confirmerRemboursement(Loan $loan, float $montantPaye): void
+    {
+        $loan->increment('montant_rembourse', $montantPaye);
+        $loan->refresh();
+
+        if ($loan->reste_a_payer <= 0) {
+            $loan->update(['statut' => 'rembourse']);
+        } elseif ($loan->statut === 'approuve') {
+            $loan->update(['statut' => 'en_cours']);
+        }
     }
 }
