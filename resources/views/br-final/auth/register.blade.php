@@ -339,6 +339,12 @@
     from { opacity: 0; transform: translateY(10px); }
     to { opacity: 1; transform: translateY(0); }
   }
+
+  /* ─── CODE PARRAIN AUTO-FILLED ─── */
+  input[name="code_parrain"][readonly] {
+    cursor: not-allowed;
+    opacity: 0.85;
+  }
 </style>
 </head>
 <body>
@@ -453,12 +459,13 @@
       <div class="field-group">
         <div class="field-label">
           <span class="label-text">Code d'invitation</span>
+          <span class="label-optional" id="parrainBadge" style="display:none;color:#E8521A;font-weight:600;">✓ Pré-rempli</span>
         </div>
         <div class="input-row">
           <span class="input-icon">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#E8521A" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
           </span>
-          <input type="text" name="code_parrain" placeholder="code d'invitation" value="{{ old('code_parrain') }}" style="border-color:rgba(232,82,26,0.3);background:#FEF9F6;">
+          <input type="text" id="codeParrainInput" name="code_parrain" placeholder="code d'invitation" value="{{ old('code_parrain') }}" style="border-color:rgba(232,82,26,0.3);background:#FEF9F6;">
         </div>
       </div>
 
@@ -520,28 +527,46 @@
 </div>
 
 <script>
-function togglePwd(inputId, iconId) {
-  const pwd = document.getElementById(inputId);
-  const icon = document.getElementById(iconId);
-  if (pwd.type === 'password') {
-    pwd.type = 'text';
-    icon.innerHTML = '<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/>';
-  } else {
-    pwd.type = 'password';
-    icon.innerHTML = '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>';
+  // ─── AUTO-FILL CODE PARRAIN depuis ?parrain= dans l'URL ───
+  (function () {
+    const params = new URLSearchParams(window.location.search);
+    const parrain = params.get('parrain');
+    const input = document.getElementById('codeParrainInput');
+    const badge = document.getElementById('parrainBadge');
+
+    // On ne pré-remplit que si le champ n'a pas déjà une valeur
+    // (old() de Laravel a la priorité en cas de re-soumission avec erreurs)
+    if (parrain && input && !input.value.trim()) {
+      input.value = parrain;
+      input.readOnly = true; // empêche la modification accidentelle
+      input.style.borderColor = 'rgba(232,82,26,0.6)';
+      input.style.background = '#FEF0E8';
+      if (badge) badge.style.display = 'inline';
+    }
+  })();
+
+  // ─── TOGGLE MOT DE PASSE ───
+  function togglePwd(inputId, iconId) {
+    const pwd = document.getElementById(inputId);
+    const icon = document.getElementById(iconId);
+    if (pwd.type === 'password') {
+      pwd.type = 'text';
+      icon.innerHTML = '<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/>';
+    } else {
+      pwd.type = 'password';
+      icon.innerHTML = '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>';
+    }
   }
-}
 
-document.getElementById('registerForm').addEventListener('submit', function(e) {
-  const btn    = document.getElementById('submitBtn');
-  const label  = document.getElementById('btnLabel');
-  const spinner = document.getElementById('spinnerWrap');
-
-  // Activer le spinner
-  btn.disabled = true;
-  label.classList.add('hidden');
-  spinner.classList.add('visible');
-});
+  // ─── SPINNER AU SUBMIT ───
+  document.getElementById('registerForm').addEventListener('submit', function () {
+    const btn     = document.getElementById('submitBtn');
+    const label   = document.getElementById('btnLabel');
+    const spinner = document.getElementById('spinnerWrap');
+    btn.disabled = true;
+    label.classList.add('hidden');
+    spinner.classList.add('visible');
+  });
 </script>
 </body>
 </html>
