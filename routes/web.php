@@ -26,6 +26,10 @@ Route::get('/', function () {
 
 Route::get('/portail', [AuthController::class, 'portail'])->name('br.portail');
 
+Route::get('/account-delete-form', function () {
+    return view('account-delete');
+})->name('account.delete.form');
+
 
 Route::prefix('br')->name('br.')->group(function () {
 
