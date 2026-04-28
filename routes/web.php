@@ -30,6 +30,11 @@ Route::get('/account-delete-form', function () {
     return view('account-delete');
 })->name('account.delete.form');
 
+// routes/web.php
+
+Route::delete('/account/delete', function () {
+    return response()->json(['message' => 'OK'], 200);
+})->name('account.delete');
 
 Route::prefix('br')->name('br.')->group(function () {
 
