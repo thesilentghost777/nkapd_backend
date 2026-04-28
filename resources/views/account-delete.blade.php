@@ -420,7 +420,7 @@
     </div>
 
     <footer>
-        <p>© {{ date('Y') }} Business Room &nbsp;·&nbsp; <a href="{{ route('privacy') ?? '#' }}">Politique de confidentialité</a> &nbsp;·&nbsp; <a href="mailto:support@businessroom.app">Support</a></p>
+        <p>© {{ date('Y') }} Business Room </p>
     </footer>
 
     <script>
