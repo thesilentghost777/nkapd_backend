@@ -26,7 +26,6 @@
     overflow: hidden;
   }
 
-  /* Soft background texture blobs */
   .br-login-wrap::before {
     content: '';
     position: fixed;
@@ -53,7 +52,6 @@
     z-index: 1;
   }
 
-  /* Header brand section */
   .br-brand {
     text-align: center;
     margin-bottom: 28px;
@@ -96,7 +94,6 @@
     margin: 0;
   }
 
-  /* Main white card */
   .br-card {
     background: white;
     border-radius: 28px;
@@ -118,7 +115,6 @@
     margin: 0 0 28px 0;
   }
 
-  /* Alerts */
   .br-alert-error {
     background: #fce8e8;
     border-radius: 12px;
@@ -138,10 +134,7 @@
     text-align: center;
   }
 
-  /* Form fields */
-  .br-field {
-    margin-bottom: 20px;
-  }
+  .br-field { margin-bottom: 20px; }
   .br-label {
     display: block;
     font-size: 12px;
@@ -150,9 +143,7 @@
     font-weight: 600;
     letter-spacing: 0.3px;
   }
-  .br-input-wrap {
-    position: relative;
-  }
+  .br-input-wrap { position: relative; }
   .br-input-icon {
     position: absolute;
     left: 14px;
@@ -187,11 +178,8 @@
     color: #bbb; padding: 0; display: flex; align-items: center;
   }
   .br-input-toggle:hover { color: #c2601a; }
-  .br-error {
-    color: #e74c3c; font-size: 12px; margin-top: 6px;
-  }
+  .br-error { color: #e74c3c; font-size: 12px; margin-top: 6px; }
 
-  /* Remember + forgot */
   .br-row-remember {
     display: flex; align-items: center; justify-content: space-between;
     margin-bottom: 24px;
@@ -201,8 +189,7 @@
   }
   .br-remember-label input[type="checkbox"] {
     width: 16px; height: 16px; margin: 0;
-    accent-color: #c2601a;
-    cursor: pointer;
+    accent-color: #c2601a; cursor: pointer;
   }
   .br-remember-text { font-size: 13px; color: #999; }
 
@@ -219,7 +206,6 @@
   }
   .br-forgot-btn:hover { text-decoration: underline; }
 
-  /* Submit button */
   .br-btn-submit {
     background: linear-gradient(135deg, #e07020 0%, #c2601a 100%);
     color: white;
@@ -252,21 +238,32 @@
     box-shadow: 0 4px 16px rgba(194,96,26,0.30);
   }
 
-  /* Spinner animation */
+  /* ===== SPINNER UNIVERSEL ===== */
   @keyframes spin {
     to { transform: rotate(360deg); }
   }
   .spinner {
     display: inline-block;
-    width: 18px;
-    height: 18px;
-    border: 2.5px solid rgba(255,255,255,0.3);
+    width: 16px;
+    height: 16px;
+    border: 2.5px solid rgba(255,255,255,0.35);
     border-top-color: white;
     border-radius: 50%;
-    animation: spin 0.6s linear infinite;
+    animation: spin 0.65s linear infinite;
+    flex-shrink: 0;
+  }
+  /* Spinner sombre pour boutons clairs (Google) */
+  .spinner-dark {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    border: 2.5px solid rgba(0,0,0,0.12);
+    border-top-color: #555;
+    border-radius: 50%;
+    animation: spin 0.65s linear infinite;
+    flex-shrink: 0;
   }
 
-  /* Divider */
   .br-divider {
     display: flex; align-items: center; gap: 12px;
     margin: 24px 0;
@@ -274,7 +271,6 @@
   .br-divider-line { flex: 1; height: 1px; background: #efede8; }
   .br-divider-text { font-size: 11px; color: #c0bab0; white-space: nowrap; letter-spacing: 1px; text-transform: uppercase; }
 
-  /* OAuth buttons */
   .br-oauth-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -288,25 +284,23 @@
     cursor: pointer; transition: all 0.2s;
     font-family: 'DM Sans', sans-serif;
     text-decoration: none;
+    min-height: 48px;
+  }
+  .br-oauth-btn:disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
+    transform: none !important;
   }
   .br-oauth-google {
     background: white; border: 1.5px solid #e8e4de; color: #1a1a1a;
   }
-  .br-oauth-google:hover { background: #fafaf8; border-color: #d0ccc6; }
+  .br-oauth-google:not(:disabled):hover { background: #fafaf8; border-color: #d0ccc6; }
 
   .br-oauth-apple {
     background: #1a1a1a; border: none; color: white;
   }
-  .br-oauth-apple:hover { background: #2d2d2d; }
+  .br-oauth-apple:not(:disabled):hover { background: #2d2d2d; }
 
-  .br-oauth-email {
-    grid-column: span 2;
-    background: #f5f3ef; border: none; color: #666;
-    margin-top: 0;
-  }
-  .br-oauth-email:hover { background: #edeae4; }
-
-  /* Footer register */
   .br-footer {
     margin-top: 24px;
     padding-top: 20px;
@@ -322,7 +316,6 @@
   }
   .br-footer a:hover { text-decoration: underline; }
 
-  /* Security badges */
   .br-badges {
     display: flex; align-items: center; justify-content: center; gap: 20px;
     margin-top: 20px;
@@ -456,7 +449,6 @@
       <a href="{{ route('br.portail') }}" class="br-back-link">← Retour au portail</a>
 
       <div class="br-logo-icon">
-        {{-- Briefcase icon --}}
         <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
           <path d="M20 7H4C2.9 7 2 7.9 2 9v11c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V9c0-1.1-.9-2-2-2z"/>
           <path d="M16 7V5c0-1.1-.9-2-2-2h-4c-1.1 0-2 .9-2 2v2" fill="rgba(255,255,255,0.4)"/>
@@ -558,8 +550,6 @@
           </svg>
           Apple
         </button>
-
-        
       </div>
 
       {{-- Footer --}}
@@ -640,6 +630,26 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 
+// =====================================================
+// UTILITAIRE : Locker / Unlocker un bouton avec spinner
+// =====================================================
+function lockBtn(btn, spinnerClass, loadingText) {
+    btn.disabled = true;
+    btn._originalHTML = btn.innerHTML;
+    btn.innerHTML = `<span class="${spinnerClass}"></span> ${loadingText}`;
+}
+
+function unlockBtn(btn) {
+    btn.disabled = false;
+    if (btn._originalHTML) {
+        btn.innerHTML = btn._originalHTML;
+        delete btn._originalHTML;
+    }
+}
+
+// =====================================================
+// Firebase : envoi du token au backend
+// =====================================================
 async function sendFirebaseToken(idToken, codeParrain = null) {
     const body = { idToken };
     if (codeParrain) body.code_parrain = codeParrain;
@@ -660,36 +670,71 @@ async function sendFirebaseToken(idToken, codeParrain = null) {
     }
 }
 
-// Google
-document.getElementById('btnGoogle').addEventListener('click', async () => {
+// =====================================================
+// Bouton Google
+// =====================================================
+document.getElementById('btnGoogle').addEventListener('click', async function () {
+    const btn = this;
+    if (btn.disabled) return;
+
+    lockBtn(btn, 'spinner-dark', 'Connexion...');
+
     const provider = new firebase.auth.GoogleAuthProvider();
     provider.setCustomParameters({ prompt: 'select_account' });
+
     try {
         const result = await auth.signInWithPopup(provider);
         const idToken = await result.user.getIdToken();
         await sendFirebaseToken(idToken);
+        // Pas de unlockBtn ici : la page va rediriger
     } catch (e) {
         console.error(e);
         alert('Connexion Google annulée ou échouée.');
+        unlockBtn(btn); // On rend le bouton disponible seulement en cas d'erreur
     }
 });
 
-// Apple
-document.getElementById('btnApple').addEventListener('click', async () => {
+// =====================================================
+// Bouton Apple
+// =====================================================
+document.getElementById('btnApple').addEventListener('click', async function () {
+    const btn = this;
+    if (btn.disabled) return;
+
+    lockBtn(btn, 'spinner', 'Connexion...');
+
     const provider = new firebase.auth.OAuthProvider('apple.com');
     provider.addScope('email');
     provider.addScope('name');
+
     try {
         const result = await auth.signInWithPopup(provider);
         const idToken = await result.user.getIdToken();
         await sendFirebaseToken(idToken);
+        // Pas de unlockBtn ici : la page va rediriger
     } catch (e) {
         console.error(e);
         alert('Connexion Apple annulée ou échouée.');
+        unlockBtn(btn); // On rend le bouton disponible seulement en cas d'erreur
     }
 });
 
-// Password toggle
+// =====================================================
+// Formulaire classique (submit)
+// =====================================================
+document.getElementById('loginForm').addEventListener('submit', function (e) {
+    const btn = document.getElementById('submitBtn');
+    if (btn.disabled) {
+        e.preventDefault();
+        return false;
+    }
+    lockBtn(btn, 'spinner', 'Connexion...');
+    // Pas de unlockBtn : la page recharge après soumission
+});
+
+// =====================================================
+// Toggle mot de passe
+// =====================================================
 function togglePassword() {
     const input = document.getElementById('passwordInput');
     const icon  = document.getElementById('eyeIcon');
@@ -702,22 +747,10 @@ function togglePassword() {
     }
 }
 
-// ===== SPINNER & ANTI-DOUBLE SOUMISSION =====
-document.getElementById('loginForm').addEventListener('submit', function(e) {
-    const btn = document.getElementById('submitBtn');
-    // Si déjà désactivé, on bloque toute nouvelle soumission
-    if (btn.disabled) {
-        e.preventDefault();
-        return false;
-    }
-
-    // Désactiver le bouton et afficher le spinner
-    btn.disabled = true;
-    btn.innerHTML = '<span class="spinner"></span> Connexion...';
-});
-
-// ===== WHATSAPP MODAL =====
-const WA_NUMBER = '237696087354'; // Cameroon prefix + number
+// =====================================================
+// Modal WhatsApp (mot de passe oublié)
+// =====================================================
+const WA_NUMBER = '237696087354';
 
 function openForgotModal() {
     document.getElementById('forgotModal').classList.add('open');
@@ -760,13 +793,11 @@ function updateWhatsAppPreview(value) {
     }
 }
 
-// Close modal on overlay click
-document.getElementById('forgotModal').addEventListener('click', function(e) {
+document.getElementById('forgotModal').addEventListener('click', function (e) {
     if (e.target === this) closeForgotModal();
 });
 
-// Close on Escape
-document.addEventListener('keydown', function(e) {
+document.addEventListener('keydown', function (e) {
     if (e.key === 'Escape') closeForgotModal();
 });
 </script>
