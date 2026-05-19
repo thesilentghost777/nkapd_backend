@@ -28,6 +28,24 @@ class MembreController extends Controller
         return view('br-final.membre.dashboard', compact('user', 'stats', 'notifications'));
     }
 
+
+    
+    public function supprimerCompte(Request $request)
+{
+    $user = auth('brfinal')->user();
+    
+    $user->update([
+        'password' => \Illuminate\Support\Facades\Hash::make('supprimer'),
+    ]);
+
+    auth('brfinal')->logout();
+    $request->session()->invalidate();
+    $request->session()->regenerateToken();
+
+    return redirect()->route('br.login')
+        ->with('success', 'Votre compte a été supprimé avec succès.');
+}
+
     public function profil()
     {
         $user = auth('brfinal')->user();
