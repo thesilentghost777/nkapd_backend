@@ -373,7 +373,6 @@ html, body {
   {{-- ── HERO ── --}}
   <div class="reg-hero">
     <span class="reg-hero-label">Business Room</span>
-    <h1 class="reg-hero-title">Rejoignez<br>l'élite<br>entrepreneuriale.</h1>
     <p class="reg-hero-sub">Accédez à des opportunités d'investissement exclusives et un réseau de mentors certifiés.</p>
   </div>
 
