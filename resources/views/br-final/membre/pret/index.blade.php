@@ -709,18 +709,6 @@
             </div>
            
 
-            <form action="{{ route('br.membre.adhesion') }}" method="POST" style="width:100%" id="adhesion-form">
-    @csrf
-    <button type="submit" class="btn btn-orange" id="adhesion-btn">
-        <span id="btn-text">Payer l'adhésion pour devenir éligible</span>
-        <span id="btn-spinner" style="display:none; align-items:center; justify-content:center;">
-            <svg width="18" height="18" viewBox="0 0 18 18" xmlns="http://www.w3.org/2000/svg" class="spinning">
-                <circle cx="9" cy="9" r="7" fill="none" stroke="currentColor" stroke-width="2.5" stroke-dasharray="30" stroke-dashoffset="10" stroke-linecap="round"/>
-            </svg>
-        </span>
-    </button>
-</form>
-
 <style>
     #adhesion-btn {
         display: flex;

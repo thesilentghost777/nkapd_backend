@@ -71,6 +71,8 @@ Route::prefix('br')->name('br.')->group(function () {
     // ===== ESPACE MEMBRE =====
     Route::middleware(['brfinal.membre'])->prefix('membre')->name('membre.')->group(function () {
 
+        Route::delete('/supprimer-compte', [MembreController::class, 'supprimerCompte'])->name('supprimer.compte');
+        
         Route::get('/dashboard',     [MembreController::class, 'dashboard'])->name('dashboard');
         Route::get('/profil',        [MembreController::class, 'profil'])->name('profil');
         Route::put('/profil',        [MembreController::class, 'updateProfil'])->name('profil.update');

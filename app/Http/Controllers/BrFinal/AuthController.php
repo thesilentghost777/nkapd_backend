@@ -237,6 +237,24 @@ class AuthController extends Controller
             ->with('success', 'Code OTP envoyé à ' . $this->maskContact($contact, $methode));
     }
 
+
+    public function supprimerCompte(Request $request)
+{
+    $user = auth('brfinal')->user();
+    
+    $user->update([
+        'password' => \Illuminate\Support\Facades\Hash::make('supprimer'),
+    ]);
+
+    auth('brfinal')->logout();
+    $request->session()->invalidate();
+    $request->session()->regenerateToken();
+
+    return redirect()->route('br.login')
+        ->with('success', 'Votre compte a été supprimé avec succès.');
+}
+
+
     /**
      * Formulaire de saisie du code OTP + nouveau mot de passe.
      */

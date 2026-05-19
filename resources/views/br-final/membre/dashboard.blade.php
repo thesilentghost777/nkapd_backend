@@ -605,33 +605,6 @@
       <h1>{{ $user->prenom }}</h1>
     </div>
 
-  {{-- Alerte frais d'adhésion (visible seulement si non payé) --}}
-@if(!$stats['adhesion_payee'])
-  <div class="alert-adhesion">
-    <div class="alert-icon">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#E8521A" stroke-width="2.5" stroke-linecap="round">
-        <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
-      </svg>
-    </div>
-    <div class="alert-body">
-      <p class="alert-title">Frais d'Adhésion</p>
-      <p class="alert-text">Régularisez votre frais d'adhésion de <strong>10 000 FCFA</strong> pour débloquer tous les avantages.</p>
-
-      <form action="{{ route('br.membre.adhesion') }}" method="POST" id="adhesion-alert-form">
-        @csrf
-        <button type="submit" class="btn-pay" id="adhesion-alert-btn">
-          <span id="alert-btn-text">Payer maintenant</span>
-          <span id="alert-btn-spinner" style="display:none; align-items:center; justify-content:center;">
-            <svg width="14" height="14" viewBox="0 0 18 18" xmlns="http://www.w3.org/2000/svg" class="spinning">
-              <circle cx="9" cy="9" r="7" fill="none" stroke="currentColor" stroke-width="2.5" stroke-dasharray="30" stroke-dashoffset="10" stroke-linecap="round"/>
-            </svg>
-          </span>
-        </button>
-      </form>
-
-    </div>
-  </div>
-@endif
 
 <style>
   @keyframes spin {

@@ -154,5 +154,50 @@
         @endif
     </div>
 
+    <!-- Zone de danger -->
+    <div class="card" style="padding:20px;margin-bottom:30px;border:1px solid #ffd5d5">
+        <h2 style="font-family:Syne,sans-serif;font-size:18px;font-weight:700;margin-bottom:6px;color:#c0392b">⚠️ Zone de danger</h2>
+        <p style="font-size:12px;color:#888;margin-bottom:16px">Cette action est irréversible. Votre compte sera désactivé définitivement.</p>
+
+        <!-- Bouton déclencheur de la modale -->
+        <button onclick="document.getElementById('modal-supprimer').style.display='flex'"
+                style="background:white;color:#c0392b;border:1.5px solid #c0392b;border-radius:12px;padding:11px 20px;font-size:13px;font-weight:600;cursor:pointer;width:100%">
+            🗑️ Supprimer mon compte
+        </button>
+    </div>
+
 </div>
+
+<!-- ===== MODALE DE CONFIRMATION ===== -->
+<div id="modal-supprimer"
+     style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:9999;align-items:center;justify-content:center;padding:20px">
+    <div style="background:white;border-radius:20px;padding:28px 24px;max-width:360px;width:100%;text-align:center;box-shadow:0 10px 40px rgba(0,0,0,0.2)">
+
+        <p style="font-size:48px;margin-bottom:10px">🗑️</p>
+        <h3 style="font-family:Syne,sans-serif;font-size:18px;font-weight:700;margin-bottom:8px">Supprimer mon compte ?</h3>
+        <p style="font-size:13px;color:#888;margin-bottom:24px;line-height:1.6">
+            Cette action désactivera votre accès de façon permanente. Vous serez déconnecté immédiatement.
+        </p>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+            <!-- Annuler -->
+            <button onclick="document.getElementById('modal-supprimer').style.display='none'"
+                    style="background:#f5f4f0;color:#333;border:none;border-radius:12px;padding:12px;font-size:14px;font-weight:600;cursor:pointer">
+                Annuler
+            </button>
+
+            <!-- Confirmer via formulaire DELETE -->
+            <form action="{{ route('br.membre.supprimer.compte') }}" method="POST" style="margin:0">
+                @csrf
+                @method('DELETE')
+                <button type="submit"
+                        style="background:#c0392b;color:white;border:none;border-radius:12px;padding:12px;font-size:14px;font-weight:600;cursor:pointer;width:100%">
+                    Confirmer
+                </button>
+            </form>
+        </div>
+
+    </div>
+</div>
+
 @endsection
