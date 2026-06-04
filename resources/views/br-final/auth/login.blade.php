@@ -1,177 +1,260 @@
 {{-- ============================================================
      resources/views/br-final/auth/login.blade.php
+     Restyled — COOP-CA · même charte que le portail & register
      ============================================================ --}}
 @extends('br-final.layouts.guest')
-@section('title', 'Connexion')
+@section('title', 'Connexion · COOP-CA')
 @section('content')
 
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800;900&display=swap');
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
-  --brand:       #C2601A;
-  --brand-dark:  #A04D12;
-  --brand-light: #FEF0E8;
-  --bg:          #F5F3EF;
-  --dark:        #1A1A1A;
-  --mid:         #666;
-  --light:       #BBB;
-  --border:      #E8E4DE;
-  --input-bg:    #FAFAF8;
-  --radius:      18px;
-  --radius-sm:   14px;
-  --shadow-brand: 0 4px 18px rgba(194,96,26,0.28);
+  --green-dark:   #1B4332;
+  --green-mid:    #2D6A4F;
+  --green-light:  #D8F3DC;
+  --green-pale:   #F0FAF3;
+  --gold:         #D4A017;
+  --gold-light:   #FFF8E1;
+  --white:        #FFFFFF;
+  --bg:           #F4F7F4;
+  --dark:         #111827;
+  --mid:          #4B5563;
+  --light:        #9CA3AF;
+  --border:       #E5E7EB;
+  --input-bg:     #F9FAF9;
+  --radius:       16px;
+  --radius-sm:    12px;
+  --shadow-green: 0 4px 20px rgba(27,67,50,0.28);
+  --shadow-card:  0 2px 24px rgba(0,0,0,0.07);
 }
 
-body, html {
-  font-family: 'DM Sans', sans-serif;
+html, body {
+  font-family: 'Manrope', sans-serif;
   background: var(--bg);
   min-height: 100vh;
+  color: var(--dark);
+  -webkit-font-smoothing: antialiased;
 }
 
-/* ── LAYOUT ── */
+/* ══════════════════════════════
+   LAYOUT
+══════════════════════════════ */
 .auth-wrap {
   min-height: 100vh;
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: center;
-  padding: 32px 16px 48px;
-  background: var(--bg);
   position: relative;
   overflow: hidden;
 }
 
-.auth-wrap::before {
-  content: '';
-  position: fixed;
-  top: -100px; right: -100px;
-  width: 380px; height: 380px;
-  background: radial-gradient(circle, rgba(194,96,26,0.11) 0%, transparent 70%);
-  border-radius: 50%;
-  pointer-events: none;
-}
-.auth-wrap::after {
-  content: '';
-  position: fixed;
-  bottom: -80px; left: -80px;
-  width: 280px; height: 280px;
-  background: radial-gradient(circle, rgba(194,96,26,0.07) 0%, transparent 70%);
-  border-radius: 50%;
-  pointer-events: none;
-}
-
-.auth-inner {
+/* ══════════════════════════════
+   HERO HEADER — fond vert foncé
+══════════════════════════════ */
+.auth-hero {
   width: 100%;
-  max-width: 420px;
+  background: var(--green-dark);
+  padding: 0 24px;
   position: relative;
-  z-index: 1;
+  overflow: hidden;
+  flex-shrink: 0;
 }
 
-/* ── BRAND HEADER ── */
-.auth-brand {
-  text-align: center;
-  margin-bottom: 24px;
+/* Cercles déco */
+.auth-hero::before {
+  content: '';
+  position: absolute;
+  width: 240px; height: 240px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.04);
+  top: -70px; right: -50px;
+  pointer-events: none;
+}
+.auth-hero::after {
+  content: '';
+  position: absolute;
+  width: 140px; height: 140px;
+  border-radius: 50%;
+  background: rgba(212,160,23,0.1);
+  bottom: 0; left: -30px;
+  pointer-events: none;
 }
 
-.auth-back {
+.hero-inner {
+  position: relative; z-index: 1;
+  padding: 28px 0 38px;
+}
+
+/* Back */
+.hero-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  color: rgba(255,255,255,0.55);
+  font-size: 12px;
+  font-weight: 600;
+  text-decoration: none;
+  margin-bottom: 22px;
+  transition: color 0.2s;
+}
+.hero-back:hover { color: white; }
+
+/* Logo */
+.hero-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+.logo-icon {
+  width: 38px; height: 38px;
+  background: rgba(255,255,255,0.12);
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.15);
+  display: flex; align-items: center; justify-content: center;
+}
+.logo-name { font-size: 15px; font-weight: 900; color: white; letter-spacing: 0.02em; }
+.logo-sub  { font-size: 9px;  font-weight: 700; color: var(--gold); letter-spacing: 0.14em; text-transform: uppercase; }
+
+/* Pill label */
+.hero-label {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  font-size: 12px;
-  color: #AAA;
-  text-decoration: none;
-  margin-bottom: 20px;
-  letter-spacing: 0.3px;
-  transition: color 0.2s;
-}
-.auth-back:hover { color: var(--brand); }
-
-.auth-logo {
-  width: 60px; height: 60px;
-  background: linear-gradient(135deg, #E07020 0%, #C2601A 100%);
-  border-radius: 16px;
-  display: flex; align-items: center; justify-content: center;
-  margin: 0 auto 14px;
-  box-shadow: var(--shadow-brand);
-}
-.auth-logo svg { width: 28px; height: 28px; fill: white; }
-
-.auth-brand-name {
-  font-family: 'Syne', sans-serif;
-  font-size: 28px;
-  font-weight: 800;
-  color: var(--dark);
-  letter-spacing: -1px;
-  line-height: 1.05;
-}
-.auth-brand-sub {
+  background: rgba(212,160,23,0.18);
+  border: 1px solid rgba(212,160,23,0.3);
+  border-radius: 50px;
+  padding: 5px 12px;
   font-size: 10px;
-  letter-spacing: 2.5px;
-  color: #B0A898;
-  text-transform: uppercase;
-  margin-top: 4px;
-  display: block;
-}
-
-/* ── CARD ── */
-.auth-card {
-  background: white;
-  border-radius: 26px;
-  padding: 32px 28px 28px;
-  box-shadow: 0 4px 28px rgba(0,0,0,0.07), 0 1px 3px rgba(0,0,0,0.04);
-  border: 1px solid var(--border);
-}
-
-.auth-card-title {
-  font-family: 'Syne', sans-serif;
-  font-size: 21px;
   font-weight: 700;
+  color: var(--gold);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 14px;
+}
+
+.hero-title {
+  font-size: 28px;
+  font-weight: 900;
+  color: white;
+  line-height: 1.15;
+  letter-spacing: -0.4px;
+  margin-bottom: 10px;
+}
+.hero-title em { font-style: normal; color: var(--gold); }
+
+.hero-sub {
+  font-size: 12px;
+  color: rgba(255,255,255,0.58);
+  line-height: 1.65;
+  max-width: 260px;
+}
+
+/* Badges vert dans le hero */
+.hero-badges {
+  display: flex;
+  gap: 14px;
+  margin-top: 20px;
+  flex-wrap: wrap;
+}
+.hero-badge {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 10px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.45);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.hero-badge svg { color: var(--gold); flex-shrink: 0; }
+
+/* Déco SVG */
+.hero-deco {
+  position: absolute;
+  right: 16px; bottom: 0;
+  opacity: 0.08;
+}
+
+/* ══════════════════════════════
+   CARD PANEL — fond blanc
+══════════════════════════════ */
+.auth-card-wrap {
+  width: 100%;
+  max-width: 520px;
+  background: white;
+  border-radius: 24px 24px 0 0;
+  margin-top: -20px;
+  padding: 28px 22px 52px;
+  position: relative;
+  z-index: 2;
+  flex: 1;
+  box-shadow: 0 -4px 32px rgba(0,0,0,0.06);
+}
+
+/* Tirette */
+.panel-handle {
+  width: 36px; height: 4px;
+  background: var(--border);
+  border-radius: 2px;
+  margin: 0 auto 26px;
+}
+
+.card-title {
+  font-size: 20px;
+  font-weight: 900;
   color: var(--dark);
   margin-bottom: 4px;
 }
-.auth-card-desc {
+.card-desc {
   font-size: 13px;
-  color: #999;
+  color: var(--light);
   margin-bottom: 26px;
   line-height: 1.5;
 }
 
 /* ── ALERTS ── */
 .alert {
-  border-radius: 12px;
-  padding: 11px 15px;
-  font-size: 13px;
-  text-align: center;
+  border-radius: var(--radius-sm);
+  padding: 12px 15px;
+  font-size: 12px;
+  line-height: 1.5;
   margin-bottom: 18px;
-  line-height: 1.45;
+  font-weight: 500;
 }
-.alert-error   { background: #FCE8E8; color: #C0302A; }
-.alert-success { background: #E8F5E9; color: #2E7D32; }
+.alert-error   { background: #FEF2F2; border: 1.5px solid rgba(220,38,38,0.2); color: #991B1B; }
+.alert-success { background: var(--green-pale); border: 1.5px solid rgba(45,106,79,0.2); color: var(--green-dark); }
 
 /* ── FIELDS ── */
-.field { margin-bottom: 18px; }
+.field { margin-bottom: 16px; }
+
 .field-label {
-  display: block;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+}
+.label-text {
   font-size: 11px;
-  font-weight: 600;
+  font-weight: 700;
   color: var(--mid);
-  letter-spacing: 0.5px;
   text-transform: uppercase;
-  margin-bottom: 7px;
+  letter-spacing: 0.7px;
 }
 .field-wrap { position: relative; }
 
 .field-icon {
   position: absolute;
-  left: 14px;
+  left: 13px;
   top: 50%;
   transform: translateY(-50%);
   color: var(--light);
-  display: flex;
-  align-items: center;
   pointer-events: none;
+  display: flex; align-items: center;
+  transition: color 0.2s;
 }
 
 .field-input {
@@ -179,39 +262,38 @@ body, html {
   background: var(--input-bg);
   border: 1.5px solid var(--border);
   border-radius: var(--radius-sm);
-  padding: 13px 16px 13px 42px;
+  padding: 13px 14px 13px 40px;
   font-size: 14px;
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Manrope', sans-serif;
+  font-weight: 500;
   color: var(--dark);
   outline: none;
-  transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
   -webkit-appearance: none;
+  transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
 }
-.field-input::placeholder { color: #C5C0BA; }
+.field-input::placeholder { color: var(--light); font-weight: 400; }
 .field-input:focus {
-  border-color: var(--brand);
+  border-color: var(--green-mid);
   background: white;
-  box-shadow: 0 0 0 3px rgba(194,96,26,0.10);
+  box-shadow: 0 0 0 4px rgba(45,106,79,0.1);
 }
+.field-wrap:focus-within .field-icon { color: var(--green-mid); }
 
-.field-error { font-size: 12px; color: #E74C3C; margin-top: 5px; }
+.field-error { font-size: 11px; color: #DC2626; margin-top: 5px; font-weight: 600; }
 
 /* Password toggle */
 .pwd-toggle {
   position: absolute;
-  right: 13px;
-  top: 50%;
+  right: 12px; top: 50%;
   transform: translateY(-50%);
-  background: none;
-  border: none;
+  background: none; border: none;
   cursor: pointer;
   color: var(--light);
   padding: 4px;
-  display: flex;
-  align-items: center;
+  display: flex; align-items: center;
   transition: color 0.2s;
 }
-.pwd-toggle:hover { color: var(--brand); }
+.pwd-toggle:hover { color: var(--green-mid); }
 
 /* ── REMEMBER / FORGOT ── */
 .row-meta {
@@ -230,57 +312,62 @@ body, html {
 }
 .remember-label input[type="checkbox"] {
   width: 16px; height: 16px;
-  accent-color: var(--brand);
+  accent-color: var(--green-dark);
   cursor: pointer;
   flex-shrink: 0;
 }
-.remember-text { font-size: 13px; color: #999; }
+.remember-text { font-size: 12px; color: var(--light); font-weight: 500; }
 
 .btn-forgot {
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--brand);
-  background: none;
-  border: none;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--green-mid);
+  background: none; border: none;
   cursor: pointer;
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Manrope', sans-serif;
   padding: 0;
-  transition: text-decoration 0.15s;
+  transition: color 0.2s;
 }
-.btn-forgot:hover { text-decoration: underline; }
+.btn-forgot:hover { color: var(--green-dark); text-decoration: underline; }
 
-/* ── SUBMIT BUTTON ── */
+/* ── SUBMIT ── */
 .btn-submit {
   width: 100%;
-  background: linear-gradient(135deg, #E07020 0%, #C2601A 100%);
+  background: var(--green-dark);
   color: white;
   border: none;
-  border-radius: var(--radius-sm);
-  padding: 15px;
-  font-size: 15px;
-  font-weight: 700;
-  font-family: 'Syne', sans-serif;
+  border-radius: 50px;
+  padding: 16px;
+  font-size: 14px;
+  font-weight: 800;
+  font-family: 'Manrope', sans-serif;
   cursor: pointer;
-  letter-spacing: 0.3px;
-  box-shadow: var(--shadow-brand);
-  transition: opacity 0.2s, transform 0.15s, box-shadow 0.2s;
+  letter-spacing: 0.04em;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  gap: 9px;
+  box-shadow: var(--shadow-green);
+  transition: background 0.2s, transform 0.15s, opacity 0.2s;
   -webkit-appearance: none;
 }
-.btn-submit:hover:not(:disabled) {
-  opacity: 0.91;
-  transform: translateY(-1px);
-  box-shadow: 0 8px 22px rgba(194,96,26,0.34);
-}
+.btn-submit:hover:not(:disabled) { background: var(--green-mid); transform: translateY(-1px); }
 .btn-submit:active:not(:disabled) { transform: translateY(0); }
-.btn-submit:disabled {
-  opacity: 0.68;
-  cursor: not-allowed;
-  transform: none;
+.btn-submit:disabled { opacity: 0.7; cursor: not-allowed; transform: none; }
+
+/* Assurance */
+.btn-assurance {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 12px;
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--light);
+  letter-spacing: 0.04em;
 }
+.btn-assurance svg { color: var(--gold); }
 
 /* ── SPINNER ── */
 @keyframes spin { to { transform: rotate(360deg); } }
@@ -298,48 +385,30 @@ body, html {
 .auth-footer {
   margin-top: 22px;
   padding-top: 18px;
-  border-top: 1px solid #EFEDE8;
+  border-top: 1px solid var(--border);
   text-align: center;
   font-size: 13px;
-  color: #999;
+  color: var(--light);
 }
 .auth-footer a {
-  color: var(--brand);
-  font-weight: 700;
+  color: var(--green-dark);
+  font-weight: 800;
   text-decoration: none;
   margin-left: 4px;
 }
 .auth-footer a:hover { text-decoration: underline; }
 
-/* ── BADGES ── */
-.auth-badges {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 20px;
-  margin-top: 20px;
-  flex-wrap: wrap;
-}
-.auth-badge {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  font-size: 10px;
-  color: #BBB;
-  letter-spacing: 0.8px;
-  text-transform: uppercase;
-}
-
-/* ── MODAL OVERLAY ── */
+/* ══════════════════════════════
+   MODAL — MOT DE PASSE OUBLIÉ
+══════════════════════════════ */
 .modal-overlay {
   display: none;
   position: fixed;
   inset: 0;
   z-index: 9999;
-  background: rgba(0,0,0,0.42);
-  align-items: center;
+  background: rgba(0,0,0,0.45);
+  align-items: flex-end;
   justify-content: center;
-  padding: 20px;
   backdrop-filter: blur(4px);
   -webkit-backdrop-filter: blur(4px);
 }
@@ -347,48 +416,55 @@ body, html {
 
 .modal-box {
   background: white;
-  border-radius: 22px;
-  padding: 30px 26px;
+  border-radius: 24px 24px 0 0;
+  padding: 10px 24px 40px;
   width: 100%;
-  max-width: 350px;
-  box-shadow: 0 20px 60px rgba(0,0,0,0.16);
-  animation: modalIn 0.22s ease;
+  max-width: 520px;
+  box-shadow: 0 -8px 40px rgba(0,0,0,0.14);
+  animation: slideUp 0.25s cubic-bezier(0.2,0.9,0.4,1);
 }
-@keyframes modalIn {
-  from { opacity: 0; transform: scale(0.94) translateY(10px); }
-  to   { opacity: 1; transform: scale(1) translateY(0); }
+@keyframes slideUp {
+  from { transform: translateY(40px); opacity: 0; }
+  to   { transform: translateY(0);    opacity: 1; }
+}
+
+/* Tirette modale */
+.modal-handle {
+  width: 36px; height: 4px;
+  background: var(--border);
+  border-radius: 2px;
+  margin: 0 auto 20px;
 }
 
 .modal-wa-icon {
-  width: 50px; height: 50px;
+  width: 52px; height: 52px;
   background: #25D366;
   border-radius: 50%;
   display: flex; align-items: center; justify-content: center;
   margin: 0 auto 14px;
-  box-shadow: 0 4px 14px rgba(37,211,102,0.28);
+  box-shadow: 0 4px 16px rgba(37,211,102,0.3);
 }
 .modal-title {
-  font-family: 'Syne', sans-serif;
-  font-size: 18px;
-  font-weight: 700;
+  font-size: 19px;
+  font-weight: 900;
   color: var(--dark);
   text-align: center;
   margin-bottom: 6px;
 }
 .modal-desc {
-  font-size: 13px;
-  color: #999;
+  font-size: 12px;
+  color: var(--light);
   text-align: center;
-  line-height: 1.5;
+  line-height: 1.6;
   margin-bottom: 22px;
 }
 .modal-label {
   display: block;
   font-size: 11px;
-  font-weight: 600;
+  font-weight: 700;
   color: var(--mid);
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.7px;
   margin-bottom: 8px;
 }
 
@@ -399,21 +475,20 @@ body, html {
   border: 1.5px solid var(--border);
   border-radius: var(--radius-sm);
   overflow: hidden;
-  margin-bottom: 18px;
+  margin-bottom: 16px;
   transition: border-color 0.2s, box-shadow 0.2s;
 }
 .phone-row:focus-within {
   border-color: #25D366;
-  box-shadow: 0 0 0 3px rgba(37,211,102,0.11);
+  box-shadow: 0 0 0 4px rgba(37,211,102,0.1);
 }
 .phone-prefix {
   padding: 13px 12px 13px 14px;
   font-size: 13px;
-  font-weight: 600;
-  color: #555;
+  font-weight: 700;
+  color: var(--mid);
   border-right: 1px solid var(--border);
   white-space: nowrap;
-  background: transparent;
   flex-shrink: 0;
 }
 .phone-input {
@@ -421,190 +496,240 @@ body, html {
   border: none;
   outline: none;
   background: transparent;
-  padding: 13px 13px;
+  padding: 13px;
   font-size: 14px;
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Manrope', sans-serif;
+  font-weight: 500;
   color: var(--dark);
   -webkit-appearance: none;
 }
-.phone-input::placeholder { color: #C5C0BA; }
+.phone-input::placeholder { color: var(--light); font-weight: 400; }
 
 .modal-preview {
-  background: #F0FDF4;
-  border: 1px solid #BBF7D0;
-  border-radius: 11px;
+  background: var(--green-pale);
+  border: 1px solid rgba(45,106,79,0.2);
+  border-radius: var(--radius-sm);
   padding: 11px 13px;
   font-size: 12px;
-  color: #166534;
-  line-height: 1.55;
-  margin-bottom: 18px;
+  color: var(--green-dark);
+  line-height: 1.6;
+  margin-bottom: 16px;
   display: none;
+  font-weight: 500;
 }
 .modal-preview.visible { display: block; }
+.modal-preview strong { font-weight: 800; }
 
 .btn-wa {
   width: 100%;
-  background: linear-gradient(135deg, #2ECC71 0%, #25D366 100%);
+  background: #25D366;
   color: white;
   border: none;
-  border-radius: var(--radius-sm);
-  padding: 13px;
+  border-radius: 50px;
+  padding: 14px;
   font-size: 14px;
-  font-weight: 700;
-  font-family: 'Syne', sans-serif;
+  font-weight: 800;
+  font-family: 'Manrope', sans-serif;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  box-shadow: 0 4px 14px rgba(37,211,102,0.26);
+  gap: 9px;
+  box-shadow: 0 4px 16px rgba(37,211,102,0.28);
   transition: opacity 0.2s, transform 0.15s;
   text-decoration: none;
 }
-.btn-wa:hover { opacity: 0.91; transform: translateY(-1px); }
-.btn-wa:not([href*="wa.me"]) { opacity: 0.5; pointer-events: none; }
+.btn-wa:hover { opacity: 0.9; transform: translateY(-1px); }
+.btn-wa[href="#"] { opacity: 0.45; pointer-events: none; }
 
 .btn-cancel {
   width: 100%;
   background: none;
   border: none;
-  color: #BBB;
+  color: var(--light);
   font-size: 13px;
-  margin-top: 11px;
+  font-weight: 600;
+  margin-top: 12px;
   cursor: pointer;
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Manrope', sans-serif;
   transition: color 0.2s;
+  padding: 8px 0;
 }
-.btn-cancel:hover { color: #888; }
+.btn-cancel:hover { color: var(--mid); }
 
 /* ── RESPONSIVE ── */
-@media (max-width: 480px) {
-  .auth-card { padding: 26px 20px 22px; border-radius: 22px; }
-  .auth-brand-name { font-size: 24px; }
-  .auth-logo { width: 52px; height: 52px; }
+@media (max-width: 420px) {
+  .hero-inner { padding: 22px 0 30px; }
+  .hero-title { font-size: 24px; }
+  .auth-card-wrap { padding: 24px 16px 48px; }
 }
-@media (min-width: 768px) {
-  .auth-wrap { padding: 48px 24px 64px; }
-  .auth-inner { max-width: 440px; }
-  .auth-card { padding: 38px 34px 32px; }
+@media (min-width: 1024px) {
+  .auth-wrap { flex-direction: row; align-items: stretch; }
+  .auth-hero {
+    width: 42%; flex-shrink: 0;
+    border-radius: 0; padding: 0 48px;
+    display: flex; flex-direction: column;
+    align-items: flex-start; justify-content: center;
+  }
+  .hero-inner { padding: 0; }
+  .auth-card-wrap {
+    flex: 1; margin-top: 0;
+    border-radius: 0; max-width: none;
+    display: flex; flex-direction: column;
+    justify-content: center;
+    padding: 48px 56px;
+    overflow-y: auto;
+  }
+  .panel-handle { display: none; }
+  .modal-box { border-radius: 24px; margin-bottom: 40px; }
+  .modal-overlay { align-items: center; }
 }
 </style>
 
 <div class="auth-wrap">
-  <div class="auth-inner">
 
-    {{-- Brand --}}
-    <div class="auth-brand">
-      <a href="{{ route('br.portail') }}" class="auth-back">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+  {{-- ══ HERO ══ --}}
+  <div class="auth-hero">
+    <div class="hero-inner">
+
+      <a href="{{ route('br.portail') }}" class="hero-back">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
         Retour au portail
       </a>
 
-      <div class="auth-logo">
-        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-          <path d="M20 7H4C2.9 7 2 7.9 2 9v11c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V9c0-1.1-.9-2-2-2z"/>
-          <path d="M16 7V5c0-1.1-.9-2-2-2h-4c-1.1 0-2 .9-2 2v2" fill="rgba(255,255,255,0.4)"/>
-          <rect x="10" y="11" width="4" height="2" rx="1" fill="rgba(255,255,255,0.9)"/>
-        </svg>
+      <div class="hero-logo">
+        <div class="logo-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="8"  cy="7"  r="2.5" fill="#D4A017"/>
+            <circle cx="16" cy="7"  r="2.5" fill="#D4A017"/>
+            <circle cx="12" cy="5"  r="2"   fill="white"/>
+            <path d="M3 17c0-3 2-5 5-5h8c3 0 5 2 5 5" stroke="white" stroke-width="1.8" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <div>
+          <div class="logo-name">COOP-CA</div>
+          <div class="logo-sub">Business Room</div>
+        </div>
       </div>
 
-      <div class="auth-brand-name">BUSINESS ROOM</div>
-      <span class="auth-brand-sub">Espace membres</span>
-    </div>
+      <div class="hero-label">
+        <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        Espace membres
+      </div>
 
-    {{-- Card --}}
-    <div class="auth-card">
-      <h2 class="auth-card-title">Bon retour 👋</h2>
-      <p class="auth-card-desc">Connectez-vous pour accéder à votre espace.</p>
+      <h1 class="hero-title">
+        Bon retour<br>
+        <em>parmi nous.</em>
+      </h1>
+      <p class="hero-sub">Connectez-vous pour accéder à vos financements, votre score et votre réseau.</p>
 
-      @if(session('error'))
-        <div class="alert alert-error">{{ session('error') }}</div>
-      @endif
-      @if(session('success'))
-        <div class="alert alert-success">{{ session('success') }}</div>
-      @endif
-
-      <form action="{{ route('br.login') }}" method="POST" id="loginForm">
-        @csrf
-
-        {{-- Téléphone --}}
-        <div class="field">
-          <label class="field-label">Numéro de téléphone</label>
-          <div class="field-wrap">
-            <span class="field-icon">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
-                <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81 19.79 19.79 0 01.5 1.18 2 2 0 012.18.5h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.91 8.37a16 16 0 006.72 6.72l1.23-1.23a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/>
-              </svg>
-            </span>
-            <input type="text" name="telephone" class="field-input"
-                   value="{{ old('telephone') }}"
-                   placeholder="+237 6 00 00 00 00" required
-                   inputmode="tel" autocomplete="tel">
-          </div>
-          @error('telephone')<p class="field-error">{{ $message }}</p>@enderror
+      <div class="hero-badges">
+        <div class="hero-badge">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          Connexion sécurisée
         </div>
-
-        {{-- Mot de passe --}}
-        <div class="field">
-          <label class="field-label">Mot de passe</label>
-          <div class="field-wrap">
-            <span class="field-icon">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
-                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
-                <path d="M7 11V7a5 5 0 0110 0v4"/>
-              </svg>
-            </span>
-            <input type="password" name="password" id="pwdInput"
-                   class="field-input" style="padding-right: 44px;"
-                   placeholder="••••••••" required
-                   autocomplete="current-password">
-            <button type="button" class="pwd-toggle" onclick="togglePwd()" aria-label="Afficher / masquer le mot de passe">
-              <svg id="eyeIcon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
-                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-                <circle cx="12" cy="12" r="3"/>
-              </svg>
-            </button>
-          </div>
-          @error('password')<p class="field-error">{{ $message }}</p>@enderror
+        <div class="hero-badge">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+          5 000+ membres
         </div>
-
-        {{-- Se souvenir / Oublié --}}
-        <div class="row-meta">
-          <label class="remember-label">
-            <input type="checkbox" name="remember">
-            <span class="remember-text">Se souvenir de moi</span>
-          </label>
-          <button type="button" class="btn-forgot" onclick="openForgotModal()">Mot de passe oublié ?</button>
-        </div>
-
-        <button type="submit" class="btn-submit" id="submitBtn">
-          Se connecter
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-        </button>
-      </form>
-
-      <div class="auth-footer">
-        Nouveau sur Business Room ?<a href="{{ route('br.register') }}">Créer un compte</a>
       </div>
     </div>
 
-    {{-- Badges --}}
-    <div class="auth-badges">
-      <div class="auth-badge">
-        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-        Secure 256-bit
+    <svg class="hero-deco" width="90" height="90" viewBox="0 0 90 90" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="45" cy="45" r="40" stroke="white" stroke-width="1.5"/>
+      <path d="M45 5L45 85M5 45L85 45" stroke="white" stroke-width="1"/>
+      <circle cx="45" cy="45" r="18" stroke="white" stroke-width="1.5"/>
+    </svg>
+  </div>
+
+  {{-- ══ CARD PANEL ══ --}}
+  <div class="auth-card-wrap">
+    <div class="panel-handle"></div>
+
+    <h2 class="card-title">Se connecter</h2>
+    <p class="card-desc">Entrez vos identifiants pour accéder à votre espace.</p>
+
+    @if(session('error'))
+      <div class="alert alert-error">{{ session('error') }}</div>
+    @endif
+    @if(session('success'))
+      <div class="alert alert-success">{{ session('success') }}</div>
+    @endif
+
+    <form action="{{ route('br.login') }}" method="POST" id="loginForm">
+      @csrf
+
+      {{-- Téléphone --}}
+      <div class="field">
+        <div class="field-label"><span class="label-text">Numéro de téléphone</span></div>
+        <div class="field-wrap">
+          <span class="field-icon">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+              <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81 19.79 19.79 0 01.5 1.18 2 2 0 012.18.5h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.91 8.37a16 16 0 006.72 6.72l1.23-1.23a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/>
+            </svg>
+          </span>
+          <input type="text" name="telephone" class="field-input"
+                 value="{{ old('telephone') }}"
+                 placeholder="+237 6 00 00 00 00"
+                 required inputmode="tel" autocomplete="tel">
+        </div>
+        @error('telephone')<p class="field-error">{{ $message }}</p>@enderror
       </div>
-      <div class="auth-badge">
-        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-        Verified Member
+
+      {{-- Mot de passe --}}
+      <div class="field">
+        <div class="field-label"><span class="label-text">Mot de passe</span></div>
+        <div class="field-wrap">
+          <span class="field-icon">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+              <rect x="3" y="11" width="18" height="11" rx="2"/>
+              <path d="M7 11V7a5 5 0 0110 0v4"/>
+            </svg>
+          </span>
+          <input type="password" name="password" id="pwdInput" class="field-input"
+                 style="padding-right: 44px;"
+                 placeholder="••••••••"
+                 required autocomplete="current-password">
+          <button type="button" class="pwd-toggle" onclick="togglePwd()" aria-label="Afficher / masquer">
+            <svg id="eyeIcon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+              <circle cx="12" cy="12" r="3"/>
+            </svg>
+          </button>
+        </div>
+        @error('password')<p class="field-error">{{ $message }}</p>@enderror
       </div>
+
+      {{-- Remember / Forgot --}}
+      <div class="row-meta">
+        <label class="remember-label">
+          <input type="checkbox" name="remember">
+          <span class="remember-text">Se souvenir de moi</span>
+        </label>
+        <button type="button" class="btn-forgot" onclick="openForgotModal()">Mot de passe oublié ?</button>
+      </div>
+
+      <button type="submit" class="btn-submit" id="submitBtn">
+        Se connecter
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </button>
+
+      <div class="btn-assurance">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        Connexion chiffrée · Données protégées
+      </div>
+    </form>
+
+    <div class="auth-footer">
+      Pas encore membre ?<a href="{{ route('br.register') }}">Créer un compte →</a>
     </div>
   </div>
 </div>
 
-{{-- ===== MODAL : MOT DE PASSE OUBLIÉ VIA WHATSAPP ===== --}}
+{{-- ══ MODAL : MOT DE PASSE OUBLIÉ VIA WHATSAPP ══ --}}
 <div class="modal-overlay" id="forgotModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
   <div class="modal-box">
+    <div class="modal-handle"></div>
 
     <div class="modal-wa-icon" aria-hidden="true">
       <svg width="26" height="26" viewBox="0 0 24 24" fill="white">
@@ -663,7 +788,7 @@ document.getElementById('loginForm').addEventListener('submit', function (e) {
   btn.innerHTML = '<span class="spinner"></span> Connexion…';
 });
 
-/* ── Modal Mot de passe oublié ── */
+/* ── Modal mot de passe oublié ── */
 const WA_NUMBER = '237696087354';
 
 function openForgotModal() {
@@ -679,11 +804,10 @@ function closeForgotModal() {
   document.getElementById('waPreview').classList.remove('visible');
   const link = document.getElementById('waLink');
   link.href = '#';
-  link.removeAttribute('style');
 }
 
 function updateWaPreview(val) {
-  const digits = val.replace(/\D/g, '');
+  const digits  = val.replace(/\D/g, '');
   const preview = document.getElementById('waPreview');
   const text    = document.getElementById('waPreviewText');
   const link    = document.getElementById('waLink');
@@ -695,17 +819,13 @@ function updateWaPreview(val) {
     text.textContent = msg;
     preview.classList.add('visible');
     link.href = `https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(msg)}`;
-    link.style.opacity       = '1';
-    link.style.pointerEvents = 'auto';
   } else {
     preview.classList.remove('visible');
     link.href = '#';
-    link.style.opacity       = '';
-    link.style.pointerEvents = '';
   }
 }
 
-/* Fermer en cliquant l'overlay ou Escape */
+/* Fermer sur overlay ou Escape */
 document.getElementById('forgotModal').addEventListener('click', function (e) {
   if (e.target === this) closeForgotModal();
 });

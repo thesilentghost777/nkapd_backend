@@ -1,38 +1,47 @@
 {{-- ============================================================
      resources/views/br-final/auth/register.blade.php
+     Restyled — COOP-CA · même charte que la page portail
      ============================================================ --}}
 @extends('br-final.layouts.guest')
-@section('title', 'Inscription')
+@section('title', 'Inscription · COOP-CA')
 @section('content')
 
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@300;400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800;900&display=swap');
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
-  --brand:       #E8521A;
-  --brand-dark:  #C0401A;
-  --brand-light: #FEF0E8;
-  --bg:          #F7F5F1;
-  --dark:        #181716;
-  --mid:         #6B6560;
-  --light:       #B8B2AA;
-  --border:      #E8E4DC;
-  --input-bg:    #F3F1ED;
-  --radius:      18px;
-  --radius-sm:   12px;
-  --shadow-brand: 0 4px 20px rgba(232,82,26,0.32);
+  --green-dark:   #1B4332;
+  --green-mid:    #2D6A4F;
+  --green-light:  #D8F3DC;
+  --green-pale:   #F0FAF3;
+  --gold:         #D4A017;
+  --gold-light:   #FFF8E1;
+  --white:        #FFFFFF;
+  --bg:           #F4F7F4;
+  --dark:         #111827;
+  --mid:          #4B5563;
+  --light:        #9CA3AF;
+  --border:       #E5E7EB;
+  --input-bg:     #F9FAF9;
+  --radius:       16px;
+  --radius-sm:    12px;
+  --shadow-green: 0 4px 20px rgba(27,67,50,0.28);
+  --shadow-card:  0 2px 16px rgba(0,0,0,0.07);
 }
 
 html, body {
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Manrope', sans-serif;
   background: var(--bg);
   min-height: 100vh;
   color: var(--dark);
+  -webkit-font-smoothing: antialiased;
 }
 
-/* ── LAYOUT ── */
+/* ══════════════════════════════
+   LAYOUT WRAPPER
+══════════════════════════════ */
 .reg-wrap {
   min-height: 100vh;
   display: flex;
@@ -40,99 +49,210 @@ html, body {
   align-items: center;
 }
 
-/* ── HERO ── */
+/* ══════════════════════════════
+   HERO HEADER
+══════════════════════════════ */
 .reg-hero {
   width: 100%;
-  background: linear-gradient(168deg, #FDF0E8 0%, #F9E8D8 55%, #F2D8C0 100%);
-  padding: 44px 28px 48px;
-  text-align: center;
+  background: var(--green-dark);
+  padding: 0 20px 0;
   position: relative;
   overflow: hidden;
   flex-shrink: 0;
 }
+
+/* Cercles décoratifs */
 .reg-hero::before {
   content: '';
   position: absolute;
-  width: 280px; height: 280px;
-  background: radial-gradient(circle, rgba(232,82,26,0.12) 0%, transparent 70%);
-  top: -70px; right: -50px;
+  width: 260px; height: 260px;
   border-radius: 50%;
+  background: rgba(255,255,255,0.04);
+  top: -80px; right: -60px;
   pointer-events: none;
 }
 .reg-hero::after {
   content: '';
   position: absolute;
-  width: 200px; height: 200px;
-  background: radial-gradient(circle, rgba(232,82,26,0.07) 0%, transparent 70%);
-  bottom: -40px; left: -40px;
+  width: 160px; height: 160px;
   border-radius: 50%;
+  background: rgba(212,160,23,0.1);
+  bottom: 0; left: -40px;
   pointer-events: none;
 }
 
-.reg-hero-label {
-  display: inline-block;
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 2.5px;
-  color: var(--brand);
-  text-transform: uppercase;
-  margin-bottom: 18px;
-}
-.reg-hero-title {
-  font-family: 'Syne', sans-serif;
-  font-size: 36px;
-  font-weight: 800;
-  color: var(--dark);
-  line-height: 1.1;
-  letter-spacing: -1.5px;
-  margin-bottom: 12px;
-}
-.reg-hero-sub {
-  font-size: 14px;
-  color: var(--mid);
-  line-height: 1.55;
-  max-width: 290px;
-  margin: 0 auto;
+.hero-inner {
+  position: relative; z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 28px 0 36px;
 }
 
-/* ── FORM PANEL ── */
+.hero-left { flex: 1; }
+
+/* Logo / nav-back */
+.hero-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  color: rgba(255,255,255,0.6);
+  font-size: 12px;
+  font-weight: 600;
+  text-decoration: none;
+  margin-bottom: 22px;
+  transition: color 0.2s;
+}
+.hero-back:hover { color: white; }
+
+/* Logo */
+.hero-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+.logo-icon {
+  width: 38px; height: 38px;
+  background: rgba(255,255,255,0.12);
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  border: 1px solid rgba(255,255,255,0.15);
+}
+.logo-name { font-size: 15px; font-weight: 900; color: white; letter-spacing: 0.02em; }
+.logo-sub  { font-size: 9px; font-weight: 700; color: var(--gold); letter-spacing: 0.14em; text-transform: uppercase; }
+
+.hero-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(212,160,23,0.18);
+  border: 1px solid rgba(212,160,23,0.3);
+  border-radius: 50px;
+  padding: 5px 12px;
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--gold);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 14px;
+}
+
+.hero-title {
+  font-size: 28px;
+  font-weight: 900;
+  color: white;
+  line-height: 1.15;
+  letter-spacing: -0.5px;
+  margin-bottom: 10px;
+}
+.hero-title em { font-style: normal; color: var(--gold); }
+
+.hero-sub {
+  font-size: 12px;
+  color: rgba(255,255,255,0.6);
+  line-height: 1.65;
+  max-width: 260px;
+}
+
+/* Stats mini dans le hero */
+.hero-stats {
+  display: flex;
+  gap: 16px;
+  margin-top: 22px;
+}
+.hero-stat {
+  text-align: center;
+}
+.hero-stat .val {
+  font-size: 16px;
+  font-weight: 900;
+  color: var(--gold);
+}
+.hero-stat .lbl {
+  font-size: 9px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.5);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+.hero-stat-sep { width: 1px; background: rgba(255,255,255,0.12); align-self: stretch; }
+
+/* Illustration déco */
+.hero-deco {
+  position: absolute;
+  right: 16px; bottom: 0;
+  opacity: 0.1;
+}
+
+/* ══════════════════════════════
+   FORM PANEL
+══════════════════════════════ */
 .reg-form-panel {
   width: 100%;
   max-width: 520px;
   background: white;
-  border-radius: 26px 26px 0 0;
-  margin-top: -22px;
-  padding: 30px 24px 48px;
+  border-radius: 24px 24px 0 0;
+  margin-top: -20px;
+  padding: 28px 22px 52px;
   position: relative;
   z-index: 2;
   flex: 1;
+  box-shadow: 0 -4px 32px rgba(0,0,0,0.06);
 }
 
-/* ── ALERTS ── */
+/* Tirette */
+.panel-handle {
+  width: 36px; height: 4px;
+  background: var(--border);
+  border-radius: 2px;
+  margin: 0 auto 24px;
+}
+
+/* ── DIVIDER ── */
+.divider {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 22px;
+}
+.divider-line { flex: 1; height: 1px; background: var(--border); }
+.divider-text {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--light);
+  white-space: nowrap;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+/* ── ALERT ── */
 .alert-error {
-  background: #FFF0EE;
-  border: 1.5px solid rgba(232,82,26,0.22);
+  background: #FEF2F2;
+  border: 1.5px solid rgba(220,38,38,0.2);
   border-radius: var(--radius-sm);
   padding: 13px 15px;
-  margin-bottom: 22px;
-  font-size: 13px;
-  color: var(--brand-dark);
-  line-height: 1.5;
+  margin-bottom: 20px;
+  font-size: 12px;
+  color: #991B1B;
+  line-height: 1.55;
 }
-.alert-error ul { margin: 5px 0 0 16px; }
+.alert-error strong { font-weight: 800; }
+.alert-error ul { margin: 6px 0 0 16px; }
 .alert-error li { margin-bottom: 3px; }
 
 /* ── FIELDS ── */
-.field  { margin-bottom: 16px; }
+.field { margin-bottom: 14px; }
+
 .field-label {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 7px;
+  margin-bottom: 6px;
 }
 .label-text {
   font-size: 11px;
-  font-weight: 600;
+  font-weight: 700;
   color: var(--mid);
   text-transform: uppercase;
   letter-spacing: 0.7px;
@@ -140,21 +260,22 @@ html, body {
 .label-opt {
   font-size: 10px;
   color: var(--light);
-  font-weight: 400;
-  letter-spacing: 0;
+  font-weight: 500;
   text-transform: none;
+  letter-spacing: 0;
 }
 .label-filled {
   font-size: 10px;
-  font-weight: 600;
-  color: var(--brand);
-  letter-spacing: 0;
+  font-weight: 700;
+  color: var(--green-mid);
   text-transform: none;
+  letter-spacing: 0;
   display: none;
 }
 .label-filled.show { display: inline; }
 
 .field-wrap { position: relative; }
+
 .field-icon {
   position: absolute;
   left: 13px;
@@ -162,67 +283,64 @@ html, body {
   transform: translateY(-50%);
   color: var(--light);
   pointer-events: none;
-  display: flex;
-  align-items: center;
+  display: flex; align-items: center;
 }
 
 .field-input {
   width: 100%;
   background: var(--input-bg);
-  border: 1.5px solid transparent;
+  border: 1.5px solid var(--border);
   border-radius: var(--radius-sm);
   padding: 13px 14px 13px 40px;
   font-size: 14px;
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Manrope', sans-serif;
+  font-weight: 500;
   color: var(--dark);
   outline: none;
   -webkit-appearance: none;
   transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
 }
-.field-input::placeholder { color: var(--light); }
+.field-input::placeholder { color: var(--light); font-weight: 400; }
 .field-input:focus {
-  border-color: var(--brand);
+  border-color: var(--green-mid);
   background: white;
-  box-shadow: 0 0 0 4px rgba(232,82,26,0.08);
+  box-shadow: 0 0 0 4px rgba(45,106,79,0.1);
 }
-.field-input[readonly] {
-  cursor: not-allowed;
-  opacity: 0.82;
-}
+.field-input:focus + .field-icon,
+.field-wrap:focus-within .field-icon { color: var(--green-mid); }
 
-/* Parrain field accent */
+.field-input[readonly] { cursor: not-allowed; opacity: 0.82; }
+
+/* Code parrain accent doré */
 .field-input.parrain-accent {
-  border-color: rgba(232,82,26,0.30);
-  background: #FEF9F6;
+  border-color: rgba(212,160,23,0.35);
+  background: var(--gold-light);
 }
 .field-input.parrain-accent:focus {
-  border-color: var(--brand);
-  box-shadow: 0 0 0 4px rgba(232,82,26,0.08);
+  border-color: var(--gold);
+  box-shadow: 0 0 0 4px rgba(212,160,23,0.12);
 }
 
 /* Password toggle */
 .pwd-toggle {
   position: absolute;
-  right: 12px;
-  top: 50%;
+  right: 12px; top: 50%;
   transform: translateY(-50%);
-  background: none;
-  border: none;
+  background: none; border: none;
   cursor: pointer;
   color: var(--light);
   padding: 4px;
-  display: flex;
-  align-items: center;
+  display: flex; align-items: center;
   transition: color 0.2s;
 }
-.pwd-toggle:hover { color: var(--brand); }
+.pwd-toggle:hover { color: var(--green-mid); }
 
-/* ── GRID 2 COL ── */
+/* ── GRILLE 2 COL ── */
 .row-2 {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 12px;
-  margin-bottom: 16px;
+  margin-bottom: 14px;
 }
 .row-2 .field { margin-bottom: 0; }
 
@@ -231,63 +349,65 @@ html, body {
   display: flex;
   align-items: flex-start;
   gap: 10px;
-  margin: 18px 0 24px;
+  margin: 18px 0 22px;
+  padding: 14px;
+  background: var(--green-pale);
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(45,106,79,0.12);
 }
 .check-row input[type="checkbox"] {
   width: 17px; height: 17px;
   flex-shrink: 0;
-  accent-color: var(--brand);
+  accent-color: var(--green-dark);
   cursor: pointer;
   margin-top: 2px;
-  -webkit-appearance: none;
-  appearance: auto;
 }
 .check-text {
   font-size: 12px;
   color: var(--mid);
-  line-height: 1.55;
+  line-height: 1.6;
 }
 .check-text a {
-  color: var(--brand);
+  color: var(--green-mid);
   text-decoration: none;
-  font-weight: 500;
+  font-weight: 700;
 }
+.check-text a:hover { text-decoration: underline; }
 
 /* ── SUBMIT ── */
 .btn-submit {
   width: 100%;
-  background: var(--brand);
+  background: var(--green-dark);
   color: white;
   border: none;
-  border-radius: 16px;
+  border-radius: 50px;
   padding: 16px;
-  font-size: 15px;
-  font-weight: 700;
-  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  font-weight: 800;
+  font-family: 'Manrope', sans-serif;
   cursor: pointer;
-  letter-spacing: 0.4px;
+  letter-spacing: 0.04em;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 10px;
-  box-shadow: var(--shadow-brand);
-  transition: background 0.2s, transform 0.1s, opacity 0.2s;
-  -webkit-appearance: none;
+  box-shadow: var(--shadow-green);
+  transition: background 0.2s, transform 0.15s, opacity 0.2s;
   position: relative;
   overflow: hidden;
 }
-.btn-submit:hover:not(:disabled) { background: var(--brand-dark); transform: translateY(-1px); }
+.btn-submit:hover:not(:disabled) { background: var(--green-mid); transform: translateY(-1px); }
 .btn-submit:active:not(:disabled) { transform: translateY(0); }
-.btn-submit:disabled { opacity: 0.72; cursor: not-allowed; }
+.btn-submit:disabled { opacity: 0.7; cursor: not-allowed; }
 
 /* Spinner */
 @keyframes spin { to { transform: rotate(360deg); } }
 .spinner {
-  width: 19px; height: 19px;
+  width: 18px; height: 18px;
   border: 2.5px solid rgba(255,255,255,0.3);
   border-top-color: white;
   border-radius: 50%;
-  animation: spin 0.68s linear infinite;
+  animation: spin 0.65s linear infinite;
   flex-shrink: 0;
 }
 .btn-label { display: flex; align-items: center; gap: 10px; transition: opacity 0.2s; }
@@ -299,85 +419,133 @@ html, body {
 }
 .spinner-wrap.visible { opacity: 1; }
 
+/* Gold badge sous le bouton */
+.btn-assurance {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 12px;
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--light);
+  letter-spacing: 0.04em;
+}
+.btn-assurance svg { color: var(--gold); flex-shrink: 0; }
+
 /* ── SIGN IN ── */
 .signin-row {
   text-align: center;
-  margin-top: 20px;
+  margin-top: 22px;
   font-size: 13px;
   color: var(--light);
 }
 .signin-row a {
-  color: var(--brand);
-  font-weight: 600;
+  color: var(--green-dark);
+  font-weight: 800;
   text-decoration: none;
-  margin-left: 3px;
+  margin-left: 4px;
 }
 .signin-row a:hover { text-decoration: underline; }
 
-/* ── DIVIDER ── */
-.divider {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 20px;
-}
-.divider-line { flex: 1; height: 1px; background: var(--border); }
-.divider-text { font-size: 11px; color: var(--light); white-space: nowrap; letter-spacing: 0.4px; }
-
 /* ── RESPONSIVE ── */
 @media (max-width: 420px) {
-  .reg-hero { padding: 36px 20px 44px; }
-  .reg-hero-title { font-size: 30px; }
-  .reg-form-panel { padding: 26px 18px 44px; border-radius: 22px 22px 0 0; }
-  .row-2 { grid-template-columns: 1fr; }
-}
-@media (min-width: 768px) {
-  .reg-hero { padding: 56px 40px 60px; }
-  .reg-hero-title { font-size: 44px; }
-  .reg-form-panel { padding: 36px 36px 56px; max-width: 540px; border-radius: 28px 28px 0 0; }
+  .hero-inner   { padding: 22px 0 30px; }
+  .hero-title   { font-size: 24px; }
+  .reg-form-panel { padding: 24px 16px 48px; }
+  .row-2        { grid-template-columns: 1fr; }
 }
 @media (min-width: 1024px) {
-  .reg-wrap {
-    flex-direction: row;
-    min-height: 100vh;
-    align-items: stretch;
-  }
+  .reg-wrap { flex-direction: row; min-height: 100vh; align-items: stretch; }
   .reg-hero {
-    width: 42%;
-    flex-shrink: 0;
-    border-radius: 0;
-    padding: 0 48px;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    justify-content: center;
-    text-align: left;
+    width: 42%; flex-shrink: 0;
+    border-radius: 0; padding: 0 48px;
+    display: flex; flex-direction: column;
+    align-items: flex-start; justify-content: center;
   }
-  .reg-hero-sub { max-width: 320px; margin: 0; }
+  .hero-inner { flex-direction: column; align-items: flex-start; padding: 0; }
+  .hero-sub { max-width: 300px; }
   .reg-form-panel {
-    flex: 1;
-    margin-top: 0;
-    border-radius: 0;
-    max-width: none;
-    display: flex;
-    flex-direction: column;
+    flex: 1; margin-top: 0;
+    border-radius: 0; max-width: none;
+    display: flex; flex-direction: column;
     justify-content: center;
     padding: 48px 56px;
     overflow-y: auto;
   }
+  .panel-handle { display: none; }
 }
 </style>
 
 <div class="reg-wrap">
 
-  {{-- ── HERO ── --}}
+  {{-- ══ HERO ══ --}}
   <div class="reg-hero">
-    <span class="reg-hero-label">Business Room</span>
-    <p class="reg-hero-sub">Accédez à des opportunités d'investissement exclusives et un réseau de mentors certifiés.</p>
+    <div class="hero-inner">
+
+      <div class="hero-left">
+        <a href="{{ route('home') ?? '/' }}" class="hero-back">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+          Retour
+        </a>
+
+        <div class="hero-logo">
+          <div class="logo-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="8"  cy="7"  r="2.5" fill="#D4A017"/>
+              <circle cx="16" cy="7"  r="2.5" fill="#D4A017"/>
+              <circle cx="12" cy="5"  r="2"   fill="white"/>
+              <path d="M3 17c0-3 2-5 5-5h8c3 0 5 2 5 5" stroke="white" stroke-width="1.8" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <div>
+            <div class="logo-name">COOP-CA</div>
+            <div class="logo-sub">Business Room</div>
+          </div>
+        </div>
+
+        <div class="hero-label">
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          Nouvelle adhésion
+        </div>
+
+        <h1 class="hero-title">
+          Rejoignez<br>
+          <em>la coopérative</em>
+        </h1>
+        <p class="hero-sub">Accédez à des financements flexibles, un réseau de membres et des opportunités exclusives.</p>
+
+        <div class="hero-stats">
+          <div class="hero-stat">
+            <div class="val">5 000+</div>
+            <div class="lbl">Membres</div>
+          </div>
+          <div class="hero-stat-sep"></div>
+          <div class="hero-stat">
+            <div class="val">100%</div>
+            <div class="lbl">Satisfaction</div>
+          </div>
+          <div class="hero-stat-sep"></div>
+          <div class="hero-stat">
+            <div class="val">5M+</div>
+            <div class="lbl">FCFA financés</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Décoration SVG -->
+    <svg class="hero-deco" width="90" height="90" viewBox="0 0 90 90" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="45" cy="45" r="40" stroke="white" stroke-width="1.5"/>
+      <path d="M45 5 L45 85 M5 45 L85 45" stroke="white" stroke-width="1"/>
+      <circle cx="45" cy="45" r="18" stroke="white" stroke-width="1.5"/>
+    </svg>
   </div>
 
-  {{-- ── FORM PANEL ── --}}
+  {{-- ══ FORM PANEL ══ --}}
   <div class="reg-form-panel">
+    <div class="panel-handle"></div>
 
     @if ($errors->any())
       <div class="alert-error">
@@ -485,7 +653,7 @@ html, body {
         </div>
         <div class="field-wrap">
           <span class="field-icon">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#E8521A" stroke-width="2" stroke-linecap="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#D4A017" stroke-width="2" stroke-linecap="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
           </span>
           <input type="text" id="codeParrain" name="code_parrain" class="field-input parrain-accent"
                  placeholder="Code d'invitation"
@@ -505,7 +673,7 @@ html, body {
                  placeholder="••••••••••••"
                  style="padding-right: 44px;"
                  autocomplete="new-password" required>
-          <button type="button" class="pwd-toggle" onclick="togglePwdField('pwd1','eye1')" aria-label="Afficher / masquer">
+          <button type="button" class="pwd-toggle" onclick="togglePwd('pwd1','eye1')" aria-label="Afficher / masquer">
             <svg id="eye1" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
               <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
               <circle cx="12" cy="12" r="3"/>
@@ -525,7 +693,7 @@ html, body {
                  placeholder="••••••••••••"
                  style="padding-right: 44px;"
                  autocomplete="new-password" required>
-          <button type="button" class="pwd-toggle" onclick="togglePwdField('pwd2','eye2')" aria-label="Afficher / masquer">
+          <button type="button" class="pwd-toggle" onclick="togglePwd('pwd2','eye2')" aria-label="Afficher / masquer">
             <svg id="eye2" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
               <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
               <circle cx="12" cy="12" r="3"/>
@@ -538,37 +706,41 @@ html, body {
       <div class="check-row">
         <input type="checkbox" id="terms" name="terms" required>
         <label for="terms" class="check-text">
-          J'accepte les <a href="#">Conditions d'utilisation</a> et la <a href="#">Politique de confidentialité</a> de Business Room.
+          J'accepte les <a href="#">Conditions d'utilisation</a> et la <a href="#">Politique de confidentialité</a> de COOP-CA Business Room.
         </label>
       </div>
 
-      {{-- Bouton --}}
+      {{-- Bouton submit --}}
       <button type="submit" class="btn-submit" id="submitBtn">
         <span class="btn-label" id="btnLabel">
           Rejoindre maintenant
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
         </span>
         <span class="spinner-wrap" id="spinnerWrap">
           <span class="spinner"></span>
         </span>
       </button>
+
+      <div class="btn-assurance">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        Inscription sécurisée · Données protégées
+      </div>
     </form>
 
     <div class="signin-row">
-      Déjà membre ?<a href="{{ route('br.login') }}">Se connecter</a>
+      Déjà membre ?<a href="{{ route('br.login') }}">Se connecter →</a>
     </div>
   </div>
 </div>
 
 <script>
-/* ── Auto-fill code parrain depuis ?parrain= dans l'URL ── */
+/* ── Auto-fill code parrain depuis ?parrain= ── */
 (function () {
   const params  = new URLSearchParams(window.location.search);
   const parrain = params.get('parrain');
   const input   = document.getElementById('codeParrain');
   const optLbl  = document.getElementById('optLabel');
   const filLbl  = document.getElementById('filledLabel');
-
   if (parrain && input && !input.value.trim()) {
     input.value    = parrain;
     input.readOnly = true;
@@ -578,7 +750,7 @@ html, body {
 })();
 
 /* ── Toggle mot de passe ── */
-function togglePwdField(inputId, iconId) {
+function togglePwd(inputId, iconId) {
   const input = document.getElementById(inputId);
   const icon  = document.getElementById(iconId);
   if (input.type === 'password') {

@@ -3,339 +3,210 @@
 @section('content')
 
 <style>
-/* ── Design System ──────────────────────────────── */
-:root {
-    --orange:       #F4521E;
-    --orange-light: #FFF0EB;
-    --green:        #22A45D;
-    --green-light:  #E6F7EE;
-    --red:          #E53935;
-    --red-light:    #FDECEA;
-    --ink:          #111111;
-    --ink-2:        #444444;
-    --ink-3:        #888888;
-    --ink-4:        #BBBBBB;
-    --border:       #EBEBEB;
-    --bg:           #F6F5F2;
-    --white:        #FFFFFF;
-    --radius-sm:    10px;
-    --radius-md:    16px;
-    --radius-lg:    22px;
-    --shadow-card:  0 4px 24px rgba(0,0,0,.07);
-}
-.page { max-width: 430px; margin: 0 auto; padding: 0 16px 100px; }
-
-/* Back */
-.back-link {
-    display: inline-flex; align-items: center; gap: 6px;
-    font-size: 13px; color: var(--ink-3); text-decoration: none;
-    padding: 12px 0 4px;
-}
-.back-link:hover { color: var(--orange); }
-
-/* Top bar */
-.top-bar {
-    display: flex; justify-content: space-between; align-items: flex-start;
-    padding: 12px 0 20px; flex-wrap: wrap; gap: 10px;
-}
-.top-bar h1 { font-family: 'Syne', sans-serif; font-size: 26px; font-weight: 800; letter-spacing: -.5px; }
-.top-bar .month { font-size: 13px; color: var(--orange); font-weight: 600; margin-top: 3px; }
-.top-bar-actions { display: flex; gap: 8px; align-items: center; }
-
-/* Buttons */
-.btn-primary {
-    display: inline-flex; align-items: center; justify-content: center; gap: 6px;
-    padding: 11px 18px; background: var(--orange); color: #fff;
-    font-size: 13px; font-weight: 600; border: none;
-    border-radius: var(--radius-md); cursor: pointer; text-decoration: none;
-    box-shadow: 0 4px 14px rgba(244,82,30,.3);
-    transition: background .2s, box-shadow .2s, transform .1s;
-    font-family: inherit;
-}
-.btn-primary:hover  { background: #e03e0a; }
-.btn-primary:active { transform: scale(.98); }
-
-.btn-secondary {
-    display: inline-flex; align-items: center; justify-content: center; gap: 6px;
-    padding: 11px 18px; background: var(--white); color: var(--ink-2);
-    font-size: 13px; font-weight: 500; border: 1.5px solid var(--border);
-    border-radius: var(--radius-md); cursor: pointer; text-decoration: none;
-    transition: border-color .2s; font-family: inherit;
-}
-.btn-secondary:hover { border-color: var(--ink-3); }
-
-/* Card */
-.card {
-    background: var(--white);
-    border-radius: var(--radius-lg);
-    box-shadow: var(--shadow-card);
-    padding: 20px;
-    margin-bottom: 14px;
-    border: 1px solid rgba(0,0,0,.04);
-}
-
-/* KPI grid */
-.kpi-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 16px; }
-.kpi-cell { background: var(--white); border-radius: var(--radius-lg); box-shadow: var(--shadow-card); padding: 16px; border: 1px solid rgba(0,0,0,.04); }
-.kpi-cell .kpi-icon { width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; margin-bottom: 10px; }
-.kpi-cell .kpi-icon.green-bg { background: var(--green-light); }
-.kpi-cell .kpi-icon.red-bg   { background: var(--red-light); }
-.kpi-cell .kpi-label { font-size: 11px; color: var(--ink-3); margin-bottom: 4px; }
-.kpi-cell .kpi-value { font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 800; line-height: 1; }
-.kpi-cell .kpi-value.green { color: var(--green); }
-.kpi-cell .kpi-value.red   { color: var(--red); }
-.kpi-cell .kpi-currency { font-size: 10px; color: var(--ink-4); margin-top: 3px; }
-
-/* Solde Net card (orange fill) */
-.solde-card {
-    background: var(--orange);
-    border-radius: var(--radius-lg);
-    padding: 20px; margin-bottom: 14px;
-    position: relative; overflow: hidden;
-}
-.solde-card::before {
-    content: ''; position: absolute; top: -30px; right: -30px;
-    width: 120px; height: 120px;
-    background: rgba(255,255,255,.1); border-radius: 50%;
-}
-.solde-card::after {
-    content: ''; position: absolute; bottom: -40px; right: 20px;
-    width: 90px; height: 90px;
-    background: rgba(255,255,255,.06); border-radius: 50%;
-}
-.solde-card .sc-badge {
-    display: inline-flex; align-items: center; gap: 4px;
-    background: rgba(255,255,255,.2); color: #fff;
-    font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 20px;
-    margin-bottom: 10px;
-}
-.solde-card .sc-label { font-size: 13px; color: rgba(255,255,255,.8); margin-bottom: 4px; }
-.solde-card .sc-value { font-family: 'Syne', sans-serif; font-size: 34px; font-weight: 800; color: #fff; }
-.solde-card .sc-currency { font-size: 16px; font-weight: 600; color: rgba(255,255,255,.8); margin-left: 4px; }
-
-/* Section header */
-.section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
-.section-title { font-family: 'Syne', sans-serif; font-size: 17px; font-weight: 700; }
-.section-link { font-size: 13px; color: var(--orange); font-weight: 500; text-decoration: none; }
-
-/* Form */
-.field-label { display: block; font-size: 12px; font-weight: 600; color: var(--ink-2); margin-bottom: 7px; }
-.input {
-    width: 100%; padding: 13px 14px;
-    border: 1.5px solid var(--border); border-radius: var(--radius-sm);
-    font-size: 15px; color: var(--ink); background: var(--white);
-    outline: none; transition: border-color .2s; margin-bottom: 12px; font-family: inherit;
-}
-.input:focus { border-color: var(--orange); }
-
-/* Toggle type (Entrée / Sortie) */
-.type-toggle { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px; }
-.type-toggle label { position: relative; cursor: pointer; }
-.type-toggle input { position: absolute; opacity: 0; pointer-events: none; }
-.toggle-btn {
-    display: flex; align-items: center; justify-content: center; gap: 6px;
-    padding: 12px; border-radius: var(--radius-sm); font-size: 14px; font-weight: 600;
-    border: 2px solid var(--border); transition: all .2s; background: var(--white);
-    color: var(--ink-3);
-}
-.type-toggle .entree input:checked + .toggle-btn { background: var(--green-light); border-color: var(--green); color: var(--green); }
-.type-toggle .sortie input:checked + .toggle-btn { background: var(--red-light);   border-color: var(--red);   color: var(--red); }
-
-/* Category select */
-select.input { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23888' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 14px center; padding-right: 36px; }
-
-/* Submit full */
-.btn-submit {
-    display: flex; align-items: center; justify-content: center; gap: 8px;
-    width: 100%; padding: 15px;
-    background: var(--orange); color: #fff; font-size: 15px; font-weight: 600;
-    border: none; border-radius: var(--radius-md); cursor: pointer;
-    box-shadow: 0 4px 14px rgba(244,82,30,.3);
-    transition: background .2s, transform .1s; font-family: inherit;
-}
-.btn-submit:hover  { background: #e03e0a; }
-.btn-submit:active { transform: scale(.98); }
-
-/* Transaction rows */
-.tx-table { width: 100%; border-collapse: collapse; }
-.tx-header th { font-size: 11px; font-weight: 700; color: var(--ink-3); text-align: left; padding: 0 0 10px; text-transform: uppercase; letter-spacing: .4px; }
-.tx-row td { padding: 12px 0; border-top: 1px solid var(--border); vertical-align: middle; }
-.tx-row:first-child td { border-top: none; }
-
-.tx-dot { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-.tx-dot.in  { background: var(--green-light); }
-.tx-dot.out { background: var(--red-light); }
-.tx-dot svg { width: 14px; height: 14px; }
-
-.tx-name { font-size: 14px; font-weight: 600; color: var(--ink); }
-.tx-meta { font-size: 11px; color: var(--ink-3); margin-top: 2px; }
-.tx-cat  { display: inline-block; background: var(--bg); border-radius: 6px; padding: 2px 7px; font-size: 10px; font-weight: 600; color: var(--ink-3); }
-.tx-amount { font-size: 14px; font-weight: 700; white-space: nowrap; padding-left: 12px; }
-.tx-amount.in  { color: var(--green); }
-.tx-amount.out { color: var(--red); }
-
-.empty-state { text-align: center; padding: 28px 0; color: var(--ink-4); font-size: 13px; }
-
-/* Previous cashbooks */
-.cb-chips { display: flex; flex-wrap: wrap; gap: 8px; }
-.cb-chip {
-    padding: 8px 14px; border: 1.5px solid var(--border);
-    border-radius: 20px; font-size: 13px; color: var(--ink-2); text-decoration: none;
-    transition: border-color .2s, color .2s;
-}
-.cb-chip:hover { border-color: var(--orange); color: var(--orange); }
+  :root{
+    --green:#1B4332;--green-mid:#2D6A4F;--gold:#D4A017;
+    --bg:#F0F4F1;--white:#fff;
+    --border:#d0ddd6;--muted:#9FC0A8;--text:#1B4332;--text-2:#5A8A6A;
+    --r-sm:10px;--r-md:14px;--r-lg:18px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);font-family:var(--font-sans,sans-serif);color:var(--text)}
+  .page{max-width:430px;margin:0 auto;padding:0 16px 100px}
+  .card{background:var(--white);border-radius:var(--r-lg);padding:18px;margin-bottom:12px;border:0.5px solid var(--border)}
+  .inp{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:var(--r-sm);padding:11px 13px;font-size:13px;outline:none;color:var(--text);font-family:inherit;margin-bottom:12px}
+  .inp:focus{border-color:var(--green-mid);box-shadow:0 0 0 3px rgba(45,106,79,.1)}
+  .lbl{display:block;font-size:10px;color:var(--green-mid);margin-bottom:5px;font-weight:600;letter-spacing:.5px;text-transform:uppercase}
+  .btn-gold{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:11px 18px;background:var(--gold);color:var(--green);font-size:13px;font-weight:700;border:none;border-radius:var(--r-md);cursor:pointer;text-decoration:none;font-family:inherit}
+  .btn-outline{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:11px 18px;background:var(--white);color:var(--green);font-size:13px;font-weight:600;border:1.5px solid var(--border);border-radius:var(--r-md);cursor:pointer;text-decoration:none;font-family:inherit}
+  select.inp{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%232D6A4F' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 13px center;padding-right:34px;background-color:var(--bg)}
+  .toggle-btn{display:flex;align-items:center;justify-content:center;gap:6px;padding:12px;border-radius:var(--r-sm);font-size:13px;font-weight:600;border:2px solid var(--border);background:var(--white);color:var(--muted);cursor:pointer;transition:all .2s;width:100%}
+  .entree-inp:checked~.toggle-btn{background:#E8F5EC;border-color:var(--green-mid);color:var(--green)}
+  .sortie-inp:checked~.toggle-btn{background:#FDECEA;border-color:#E53935;color:#E53935}
 </style>
 
-<div class="page">
+{{-- Hero Header --}}
+<div style="background:var(--green);padding:24px 20px 22px;position:relative;overflow:hidden">
+  <div style="position:absolute;right:-20px;top:-20px;width:130px;height:130px;border-radius:50%;background:rgba(212,160,23,.07)"></div>
+  <div style="position:absolute;left:-30px;bottom:-30px;width:100px;height:100px;border-radius:50%;background:rgba(212,160,23,.05)"></div>
 
-    <a href="{{ route('br.membre.dashboard') }}" class="back-link">
-        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
-        Retour
+  <div class="page" style="padding-bottom:0;padding-top:0">
+    <a href="{{ route('br.membre.dashboard') }}"
+       style="font-size:12px;color:rgba(255,255,255,.55);display:inline-flex;align-items:center;gap:4px;margin-bottom:16px;text-decoration:none;font-weight:500;position:relative">
+      ← Retour
     </a>
 
-    <div class="top-bar">
-        <div>
-            <h2 style="font-size: 32px;">Cahier de caisse</h2>
-            <p class="month">{{ $current->libelle_mois }}</p>
-        </div>
-        <div class="top-bar-actions">
-            @if(!$current->valide)
-            <form action="{{ route('br.membre.cashbook.valider', $current) }}" method="POST"
-                  onsubmit="return confirm('Valider définitivement ce cahier ?')" style="margin:0">
-                @csrf
-                <button type="submit" class="btn-secondary">✓ Valider</button>
-            </form>
-            @endif
-            <a href="{{ route('br.membre.cashbook.pdf', $current) }}" class="btn-primary">⬇ PDF</a>
-        </div>
-    </div>
-
-    {{-- KPI Row: Entrées + Sorties --}}
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px">
-        <div class="kpi-cell">
-            <div class="kpi-icon green-bg">
-                <svg width="16" height="16" fill="none" stroke="#22A45D" stroke-width="2.5" viewBox="0 0 24 24"><path d="M23 6l-9.5 9.5-5-5L1 18"/><path d="M17 6h6v6"/></svg>
-            </div>
-            <p class="kpi-label">Entrées</p>
-            <p class="kpi-value green">{{ number_format($current->total_entrees??0,0,',',' ') }}</p>
-            <p class="kpi-currency">FCFA</p>
-        </div>
-        <div class="kpi-cell">
-            <div class="kpi-icon red-bg">
-                <svg width="16" height="16" fill="none" stroke="#E53935" stroke-width="2.5" viewBox="0 0 24 24"><path d="M23 18l-9.5-9.5-5 5L1 6"/><path d="M17 18h6v-6"/></svg>
-            </div>
-            <p class="kpi-label">Sorties</p>
-            <p class="kpi-value red">{{ number_format($current->total_sorties??0,0,',',' ') }}</p>
-            <p class="kpi-currency">FCFA</p>
-        </div>
-    </div>
-
-    {{-- Solde Net (orange card) --}}
-    <div class="solde-card">
-        @php $solde = $current->solde ?? 0; @endphp
-        @if($current->valide)
-            <div class="sc-badge">✓ Validé</div>
-        @elseif($solde >= 0)
-            <div class="sc-badge">↑ +{{ number_format(abs($solde),0,',',' ') }}</div>
-        @else
-            <div class="sc-badge" style="background:rgba(0,0,0,.2)">↓ Déficit</div>
-        @endif
-        <p class="sc-label">Solde net</p>
-        <div>
-            <span class="sc-value">{{ number_format($solde,0,',',' ') }}</span>
-            <span class="sc-currency">FCFA</span>
-        </div>
-    </div>
-
-    {{-- Ajouter une ligne --}}
-    @if(!$current->valide)
-    <div class="card">
-        <div class="section-header"><p class="section-title">Ajouter une ligne</p></div>
-
-        <form action="{{ route('br.membre.cashbook.store') }}" method="POST">
-            @csrf
-            <input type="hidden" name="date" value="{{ date('Y-m-d') }}">
-
-            <label class="field-label">Libellé</label>
-            <input type="text" name="libelle" required placeholder="ex: Vente de stock" class="input">
-
-            <label class="field-label">Type</label>
-            <div class="type-toggle" style="margin-bottom:12px">
-                <label class="entree">
-                    <input type="radio" name="type" value="entree" checked>
-                    <div class="toggle-btn">
-                        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
-                        Entrée
-                    </div>
-                </label>
-                <label class="sortie">
-                    <input type="radio" name="type" value="sortie">
-                    <div class="toggle-btn">
-                        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
-                        Sortie
-                    </div>
-                </label>
-            </div>
-
-            <label class="field-label">Montant (FCFA)</label>
-            <input type="number" name="montant" min="1" required placeholder="0" class="input">
-
-            <label class="field-label">Catégorie</label>
-            <input type="text" name="categorie" placeholder="Ex: Vente, Achat..." class="input">
-
-            <button type="submit" class="btn-submit">
-                Enregistrer l'opération
-                <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-            </button>
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:10px;position:relative">
+      <div>
+        <h1 style="font-size:26px;font-weight:700;color:#fff;line-height:1.15;margin-bottom:4px">Cahier de caisse</h1>
+        <p style="font-size:12px;color:var(--gold);font-weight:600">{{ $current->libelle_mois }}</p>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center">
+        @if(!$current->valide)
+        <form action="{{ route('br.membre.cashbook.valider', $current) }}" method="POST"
+              onsubmit="return confirm('Valider définitivement ce cahier ?')" style="margin:0">
+          @csrf
+          <button type="submit" class="btn-outline" style="font-size:12px;padding:9px 14px">✓ Valider</button>
         </form>
-    </div>
-    @endif
-
-    {{-- Transactions --}}
-    <div class="card">
-        <div class="section-header">
-            <p class="section-title">Transactions du mois</p>
-        </div>
-        @forelse($entries as $e)
-        <div style="display:flex;align-items:center;gap:12px;padding:11px 0;border-top:1px solid var(--border)">
-            <div class="tx-dot {{ $e->type==='entree'?'in':'out' }}">
-                @if($e->type==='entree')
-                    <svg fill="none" stroke="#22A45D" stroke-width="2.5" viewBox="0 0 24 24"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
-                @else
-                    <svg fill="none" stroke="#E53935" stroke-width="2.5" viewBox="0 0 24 24"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
-                @endif
-            </div>
-            <div style="flex:1;min-width:0">
-                <p class="tx-name" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ $e->libelle }}</p>
-                <p class="tx-meta">
-                    {{ \Carbon\Carbon::parse($e->date)->format('d/m') }}
-                    @if($e->categorie) · <span class="tx-cat">{{ $e->categorie }}</span>@endif
-                </p>
-            </div>
-            <p class="tx-amount {{ $e->type==='entree'?'in':'out' }}">
-                {{ $e->type==='entree'?'+':'-' }}{{ number_format($e->montant,0,',',' ') }}
-            </p>
-        </div>
-        @empty
-            <p class="empty-state">Aucune transaction ce mois</p>
-        @endforelse
+        @endif
+        <a href="{{ route('br.membre.cashbook.pdf', $current) }}" class="btn-gold" style="font-size:12px;padding:9px 14px">⬇ PDF</a>
+      </div>
     </div>
 
-    {{-- Cahiers précédents --}}
-    @if($cashbooks->count() > 1)
-    <div class="card">
-        <p class="section-title" style="margin-bottom:12px">Cahiers précédents</p>
-        <div class="cb-chips">
-            @foreach($cashbooks as $cb)
-                @if($cb->id !== $current->id)
-                <a href="{{ route('br.membre.cashbook.show', $cb) }}" class="cb-chip">
-                    {{ $cb->libelle_mois }}{{ $cb->valide?' ✓':'' }}
-                </a>
-                @endif
-            @endforeach
-        </div>
+    {{-- Solde net pill --}}
+    @php $solde = $current->solde ?? 0; @endphp
+    <div style="margin-top:18px;background:var(--green-mid);border-radius:var(--r-md);padding:16px;border:1px solid rgba(212,160,23,.2);position:relative">
+      <p style="font-size:11px;color:rgba(255,255,255,.55);margin-bottom:4px;font-weight:500">Solde net du mois</p>
+      <div style="display:flex;align-items:baseline;gap:6px">
+        <span style="font-size:32px;font-weight:700;color:#fff">{{ number_format($solde,0,',',' ') }}</span>
+        <span style="font-size:13px;color:rgba(255,255,255,.6)">FCFA</span>
+      </div>
+      @if($current->valide)
+        <span style="position:absolute;top:14px;right:14px;background:rgba(212,160,23,.2);color:var(--gold);font-size:10px;font-weight:700;padding:4px 10px;border-radius:20px">✓ Validé</span>
+      @elseif($solde >= 0)
+        <span style="position:absolute;top:14px;right:14px;background:rgba(212,160,23,.2);color:var(--gold);font-size:10px;font-weight:700;padding:4px 10px;border-radius:20px">↑ Excédent</span>
+      @else
+        <span style="position:absolute;top:14px;right:14px;background:rgba(229,57,53,.2);color:#ff8a80;font-size:10px;font-weight:700;padding:4px 10px;border-radius:20px">↓ Déficit</span>
+      @endif
     </div>
-    @endif
+  </div>
+</div>
+
+<div class="page" style="padding-top:16px">
+
+  {{-- KPI --}}
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px">
+    <div class="card" style="margin-bottom:0;padding:16px">
+      <div style="width:34px;height:34px;border-radius:10px;background:#E8F5EC;display:flex;align-items:center;justify-content:center;margin-bottom:10px">
+        <svg width="14" height="14" fill="none" stroke="var(--green-mid)" stroke-width="2.5" viewBox="0 0 24 24"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+      </div>
+      <p style="font-size:10px;color:var(--muted);margin-bottom:4px;font-weight:500">Entrées</p>
+      <p style="font-size:20px;font-weight:700;color:var(--green)">{{ number_format($current->total_entrees??0,0,',',' ') }}</p>
+      <p style="font-size:10px;color:var(--muted);margin-top:2px">FCFA</p>
+    </div>
+    <div class="card" style="margin-bottom:0;padding:16px">
+      <div style="width:34px;height:34px;border-radius:10px;background:#FDECEA;display:flex;align-items:center;justify-content:center;margin-bottom:10px">
+        <svg width="14" height="14" fill="none" stroke="#E53935" stroke-width="2.5" viewBox="0 0 24 24"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
+      </div>
+      <p style="font-size:10px;color:var(--muted);margin-bottom:4px;font-weight:500">Sorties</p>
+      <p style="font-size:20px;font-weight:700;color:#E53935">{{ number_format($current->total_sorties??0,0,',',' ') }}</p>
+      <p style="font-size:10px;color:var(--muted);margin-top:2px">FCFA</p>
+    </div>
+  </div>
+
+  {{-- Ajouter une ligne --}}
+  @if(!$current->valide)
+  <div class="card">
+    <p style="font-size:15px;font-weight:700;color:var(--text);margin-bottom:16px;display:flex;align-items:center;gap:7px">
+      <span style="color:var(--gold)">+</span> Ajouter une ligne
+    </p>
+    <form action="{{ route('br.membre.cashbook.store') }}" method="POST">
+      @csrf
+      <input type="hidden" name="date" value="{{ date('Y-m-d') }}">
+
+      <label class="lbl">Libellé</label>
+      <input type="text" name="libelle" required placeholder="ex: Vente de stock" class="inp">
+
+      <label class="lbl">Type</label>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px">
+        <label style="cursor:pointer;display:flex;flex-direction:column">
+          <input type="radio" name="type" value="entree" checked class="entree-inp" style="position:absolute;opacity:0;pointer-events:none">
+          <div class="toggle-btn" id="tb-entree">
+            <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+            Entrée
+          </div>
+        </label>
+        <label style="cursor:pointer;display:flex;flex-direction:column">
+          <input type="radio" name="type" value="sortie" class="sortie-inp" style="position:absolute;opacity:0;pointer-events:none">
+          <div class="toggle-btn" id="tb-sortie">
+            <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
+            Sortie
+          </div>
+        </label>
+      </div>
+
+      <label class="lbl">Montant (FCFA)</label>
+      <input type="number" name="montant" min="1" required placeholder="0" class="inp">
+
+      <label class="lbl">Catégorie</label>
+      <input type="text" name="categorie" placeholder="Ex: Vente, Achat..." class="inp" style="margin-bottom:16px">
+
+      <button type="submit"
+        style="width:100%;background:var(--green);color:var(--gold);border:none;border-radius:var(--r-md);padding:14px;font-size:14px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;font-family:inherit">
+        Enregistrer l'opération
+        <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </button>
+    </form>
+  </div>
+  @endif
+
+  {{-- Transactions --}}
+  <div class="card">
+    <p style="font-size:15px;font-weight:700;color:var(--text);margin-bottom:14px">Transactions du mois</p>
+
+    @forelse($entries as $e)
+    <div style="display:flex;align-items:center;gap:12px;padding:11px 0;border-top:0.5px solid var(--border)">
+      <div style="width:30px;height:30px;border-radius:50%;background:{{ $e->type==='entree'?'#E8F5EC':'#FDECEA' }};display:flex;align-items:center;justify-content:center;flex-shrink:0">
+        @if($e->type==='entree')
+          <svg width="13" height="13" fill="none" stroke="var(--green-mid)" stroke-width="2.5" viewBox="0 0 24 24"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+        @else
+          <svg width="13" height="13" fill="none" stroke="#E53935" stroke-width="2.5" viewBox="0 0 24 24"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
+        @endif
+      </div>
+      <div style="flex:1;min-width:0">
+        <p style="font-size:13px;font-weight:600;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ $e->libelle }}</p>
+        <p style="font-size:10px;color:var(--muted);margin-top:2px">
+          {{ \Carbon\Carbon::parse($e->date)->format('d/m') }}
+          @if($e->categorie)
+            · <span style="background:var(--bg);border-radius:5px;padding:1px 6px;font-size:10px;font-weight:600;color:var(--text-2)">{{ $e->categorie }}</span>
+          @endif
+        </p>
+      </div>
+      <p style="font-size:13px;font-weight:700;white-space:nowrap;padding-left:10px;color:{{ $e->type==='entree'?'var(--green-mid)':'#E53935' }}">
+        {{ $e->type==='entree'?'+':'-' }}{{ number_format($e->montant,0,',',' ') }}
+      </p>
+    </div>
+    @empty
+      <p style="text-align:center;padding:24px 0;color:var(--muted);font-size:13px">Aucune transaction ce mois</p>
+    @endforelse
+  </div>
+
+  {{-- Cahiers précédents --}}
+  @if($cashbooks->count() > 1)
+  <div class="card">
+    <p style="font-size:15px;font-weight:700;color:var(--text);margin-bottom:12px">Cahiers précédents</p>
+    <div style="display:flex;flex-wrap:wrap;gap:8px">
+      @foreach($cashbooks as $cb)
+        @if($cb->id !== $current->id)
+        <a href="{{ route('br.membre.cashbook.show', $cb) }}"
+           style="padding:7px 14px;border:1.5px solid var(--border);border-radius:20px;font-size:12px;color:var(--green-mid);text-decoration:none;font-weight:500">
+          {{ $cb->libelle_mois }}{{ $cb->valide?' ✓':'' }}
+        </a>
+        @endif
+      @endforeach
+    </div>
+  </div>
+  @endif
 
 </div>
+
+<script>
+  document.querySelectorAll('input[name="type"]').forEach(function(r){
+    r.addEventListener('change',function(){
+      var te=document.getElementById('tb-entree');
+      var ts=document.getElementById('tb-sortie');
+      if(this.value==='entree'){
+        te.style.background='#E8F5EC';te.style.borderColor='#2D6A4F';te.style.color='#1B4332';
+        ts.style.background='#fff';ts.style.borderColor='#d0ddd6';ts.style.color='#9FC0A8';
+      } else {
+        ts.style.background='#FDECEA';ts.style.borderColor='#E53935';ts.style.color='#E53935';
+        te.style.background='#fff';te.style.borderColor='#d0ddd6';te.style.color='#9FC0A8';
+      }
+    });
+  });
+  // init state
+  document.getElementById('tb-entree').style.background='#E8F5EC';
+  document.getElementById('tb-entree').style.borderColor='#2D6A4F';
+  document.getElementById('tb-entree').style.color='#1B4332';
+</script>
+
 @endsection

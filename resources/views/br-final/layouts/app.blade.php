@@ -5,27 +5,32 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title', 'Business Room') — BR</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;900&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
             theme: {
                 extend: {
                     fontFamily: {
-                        display: ['Syne', 'sans-serif'],
-                        body: ['DM Sans', 'sans-serif']
+                        display: ['Playfair Display', 'serif'],
+                        body: ['Outfit', 'sans-serif']
                     },
                     colors: {
-                        brand: {
-                            50:  '#fff7ed',
-                            100: '#ffedd5',
-                            200: '#fed7aa',
-                            400: '#fb923c',
-                            500: '#f97316',
-                            600: '#ea580c',
-                            700: '#c2601a',
-                            800: '#9a3412',
-                            900: '#7c2d12',
+                        forest: {
+                            50:  '#f0f7f4',
+                            100: '#d6ede4',
+                            200: '#a8d5be',
+                            400: '#52a47e',
+                            500: '#2D6A4F',
+                            600: '#1B4332',
+                            700: '#163827',
+                            800: '#102b1e',
+                            900: '#0a1c13',
+                        },
+                        gold: {
+                            300: '#e8c76a',
+                            400: '#D4A017',
+                            500: '#b88a13',
                         }
                     }
                 }
@@ -36,28 +41,30 @@
         *, *::before, *::after { box-sizing: border-box; }
 
         :root {
-            --brand:        #c2601a;
-            --brand-light:  #f97316;
-            --brand-bg:     #fff7ed;
+            --dark:         #1B4332;
+            --mid:          #2D6A4F;
+            --gold:         #D4A017;
+            --gold-light:   #e8c76a;
             --surface:      #ffffff;
-            --surface-2:    #f9f8f6;
-            --border:       #ece9e3;
-            --text-primary: #1a1a1a;
-            --text-muted:   #6b7280;
-            --text-faint:   #b0aaa0;
-            --sidebar-w:    248px;
-            --header-h:     60px;
+            --surface-2:    #f0f7f4;
+            --border:       #d6ede4;
+            --border-dark:  rgba(255,255,255,0.08);
+            --text-primary: #0d2b1e;
+            --text-muted:   #4a7c62;
+            --text-faint:   #8ab5a0;
+            --sidebar-w:    260px;
+            --header-h:     64px;
         }
 
         body {
-            font-family: 'DM Sans', sans-serif;
+            font-family: 'Outfit', sans-serif;
             background: var(--surface-2);
             color: var(--text-primary);
             margin: 0;
             -webkit-font-smoothing: antialiased;
         }
 
-        h1, h2, h3, h4, h5 { font-family: 'Syne', sans-serif; margin: 0; }
+        h1, h2, h3, h4, h5 { font-family: 'Playfair Display', serif; margin: 0; }
 
         /* ── Sidebar ── */
         #sidebar {
@@ -65,155 +72,194 @@
             inset-y: 0;
             left: 0;
             width: var(--sidebar-w);
-            background: var(--surface);
-            border-right: 1px solid var(--border);
+            background: var(--dark);
             display: flex;
             flex-direction: column;
             z-index: 40;
+            box-shadow: 4px 0 24px rgba(0,0,0,0.18);
+        }
+
+        /* Decorative gold line top of sidebar */
+        #sidebar::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--gold), var(--gold-light), var(--gold));
         }
 
         .sidebar-logo {
-            padding: 22px 20px 20px;
-            border-bottom: 1px solid var(--border);
+            padding: 26px 20px 22px;
+            border-bottom: 1px solid var(--border-dark);
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 14px;
         }
 
         .sidebar-logo-icon {
-            width: 38px;
-            height: 38px;
+            width: 42px;
+            height: 42px;
             border-radius: 12px;
-            background: linear-gradient(135deg, var(--brand-light), var(--brand));
+            background: linear-gradient(135deg, var(--gold-light), var(--gold));
             display: flex;
             align-items: center;
             justify-content: center;
-            font-family: 'Syne', sans-serif;
-            font-weight: 800;
-            font-size: 18px;
-            color: #fff;
+            font-family: 'Playfair Display', serif;
+            font-weight: 900;
+            font-size: 20px;
+            color: var(--dark);
             flex-shrink: 0;
-            box-shadow: 0 4px 12px rgba(194, 96, 26, .3);
+            box-shadow: 0 4px 16px rgba(212, 160, 23, .35);
         }
 
-        .sidebar-logo-text { line-height: 1.2; }
-        .sidebar-logo-text strong { font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 700; color: var(--text-primary); display: block; }
-        .sidebar-logo-text span { font-size: 11px; color: var(--text-muted); }
+        .sidebar-logo-text { line-height: 1.25; }
+        .sidebar-logo-text strong {
+            font-family: 'Playfair Display', serif;
+            font-size: 14px;
+            font-weight: 700;
+            color: #fff;
+            display: block;
+            letter-spacing: 0.2px;
+        }
+        .sidebar-logo-text span {
+            font-size: 11px;
+            color: var(--gold-light);
+            font-weight: 400;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
 
         /* ── Nav links ── */
-        #sidebar nav { flex: 1; padding: 12px 12px; overflow-y: auto; }
+        #sidebar nav { flex: 1; padding: 10px 14px; overflow-y: auto; }
 
         .nav-section-label {
             font-size: 10px;
             font-weight: 600;
-            letter-spacing: .8px;
+            letter-spacing: 1.2px;
             text-transform: uppercase;
-            color: var(--text-faint);
-            padding: 16px 10px 6px;
+            color: var(--gold);
+            padding: 18px 10px 6px;
+            opacity: 0.7;
         }
 
         .nav-link {
             display: flex;
             align-items: center;
-            gap: 10px;
-            padding: 10px 12px;
-            border-radius: 12px;
+            gap: 11px;
+            padding: 10px 14px;
+            border-radius: 10px;
             font-size: 13.5px;
             font-weight: 500;
-            color: var(--text-muted);
+            color: rgba(255,255,255,0.55);
             text-decoration: none;
-            transition: all .18s ease;
+            transition: all .2s ease;
             margin-bottom: 2px;
             position: relative;
         }
 
         .nav-link:hover {
-            background: var(--surface-2);
-            color: var(--text-primary);
+            background: rgba(255,255,255,0.07);
+            color: rgba(255,255,255,0.9);
         }
 
         .nav-link.active {
-            background: var(--brand-bg);
-            color: var(--brand);
+            background: var(--mid);
+            color: #fff;
             font-weight: 600;
+            box-shadow: inset 0 0 0 1px rgba(212,160,23,0.25);
         }
 
         .nav-link.active::before {
             content: '';
             position: absolute;
             left: 0;
-            top: 25%;
-            bottom: 25%;
+            top: 20%;
+            bottom: 20%;
             width: 3px;
-            background: var(--brand);
+            background: var(--gold);
             border-radius: 0 3px 3px 0;
         }
 
-        .nav-link svg { width: 17px; height: 17px; flex-shrink: 0; opacity: .7; transition: opacity .18s; }
+        .nav-link svg { width: 17px; height: 17px; flex-shrink: 0; opacity: .65; transition: opacity .2s; }
         .nav-link:hover svg, .nav-link.active svg { opacity: 1; }
 
         .nav-link .badge {
             margin-left: auto;
-            background: var(--brand-bg);
-            color: var(--brand);
+            background: rgba(212,160,23,0.2);
+            color: var(--gold-light);
             font-size: 10px;
             font-weight: 700;
-            padding: 2px 7px;
+            padding: 2px 8px;
             border-radius: 20px;
+            border: 1px solid rgba(212,160,23,0.3);
         }
 
         /* ── Sidebar footer ── */
         .sidebar-footer {
-            padding: 12px;
-            border-top: 1px solid var(--border);
+            padding: 14px;
+            border-top: 1px solid var(--border-dark);
         }
 
         .sidebar-user {
             display: flex;
             align-items: center;
-            gap: 10px;
-            padding: 10px 10px;
+            gap: 11px;
+            padding: 10px 12px;
             border-radius: 12px;
             cursor: pointer;
             text-decoration: none;
-            transition: background .18s;
+            transition: background .2s;
+            background: rgba(255,255,255,0.05);
         }
 
-        .sidebar-user:hover { background: var(--surface-2); }
+        .sidebar-user:hover { background: rgba(255,255,255,0.1); }
 
         .sidebar-avatar {
-            width: 34px;
-            height: 34px;
+            width: 36px;
+            height: 36px;
             border-radius: 10px;
-            background: linear-gradient(135deg, var(--brand-light), var(--brand));
+            background: linear-gradient(135deg, var(--gold-light), var(--gold));
             display: flex;
             align-items: center;
             justify-content: center;
             font-weight: 700;
-            font-size: 13px;
-            color: #fff;
+            font-size: 14px;
+            color: var(--dark);
             flex-shrink: 0;
+            box-shadow: 0 2px 8px rgba(212,160,23,.3);
         }
 
         .sidebar-user-info { flex: 1; min-width: 0; }
-        .sidebar-user-info strong { font-size: 13px; font-weight: 600; color: var(--text-primary); display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .sidebar-user-info span { font-size: 11px; color: var(--text-muted); }
+        .sidebar-user-info strong {
+            font-size: 13px;
+            font-weight: 600;
+            color: #fff;
+            display: block;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .sidebar-user-info span { font-size: 11px; color: rgba(255,255,255,0.45); }
 
         .btn-logout {
             display: block;
             width: 100%;
             text-align: left;
             font-size: 12px;
-            color: var(--text-faint);
+            color: rgba(255,255,255,0.3);
             background: none;
             border: none;
-            padding: 6px 10px;
+            padding: 7px 12px;
             cursor: pointer;
             border-radius: 8px;
             transition: color .18s;
-            margin-top: 4px;
+            margin-top: 6px;
+            font-family: 'Outfit', sans-serif;
+            letter-spacing: 0.2px;
         }
-        .btn-logout:hover { color: #ef4444; }
+        .btn-logout:hover { color: #f87171; }
 
         /* ── Mobile header ── */
         #mobile-header {
@@ -224,12 +270,25 @@
             right: 0;
             z-index: 50;
             height: var(--header-h);
-            background: var(--surface);
-            border-bottom: 1px solid var(--border);
-            padding: 0 18px;
+            background: var(--dark);
+            border-bottom: 1px solid var(--border-dark);
+            padding: 0 20px;
             align-items: center;
             justify-content: space-between;
             width: 100%;
+            box-shadow: 0 2px 16px rgba(0,0,0,0.2);
+        }
+
+        /* gold accent on mobile header too */
+        #mobile-header::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--gold), transparent);
+            opacity: 0.5;
         }
 
         .mobile-logo {
@@ -240,45 +299,46 @@
         }
 
         .mobile-logo-icon {
-            width: 32px;
-            height: 32px;
+            width: 34px;
+            height: 34px;
             border-radius: 10px;
-            background: linear-gradient(135deg, var(--brand-light), var(--brand));
+            background: linear-gradient(135deg, var(--gold-light), var(--gold));
             display: flex;
             align-items: center;
             justify-content: center;
-            font-family: 'Syne', sans-serif;
-            font-weight: 800;
-            font-size: 14px;
-            color: #fff;
+            font-family: 'Playfair Display', serif;
+            font-weight: 900;
+            font-size: 16px;
+            color: var(--dark);
         }
 
         .mobile-logo-text {
-            font-family: 'Syne', sans-serif;
+            font-family: 'Playfair Display', serif;
             font-weight: 700;
             font-size: 15px;
-            color: var(--text-primary);
+            color: #fff;
         }
 
         #hamburger {
-            width: 36px;
-            height: 36px;
+            width: 38px;
+            height: 38px;
             border-radius: 10px;
-            border: 1px solid var(--border);
-            background: none;
+            border: 1px solid rgba(255,255,255,0.15);
+            background: rgba(255,255,255,0.07);
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            color: var(--text-muted);
+            color: rgba(255,255,255,0.7);
             flex-shrink: 0;
-            margin-left: auto;   /* ← pousse le bouton à droite */
+            margin-left: auto;
             padding: 0;
+            transition: background .18s;
         }
 
         #hamburger:hover {
-            background: var(--surface-2);
-            color: var(--text-primary);
+            background: rgba(255,255,255,0.14);
+            color: #fff;
         }
 
         /* ── Mobile drawer ── */
@@ -294,8 +354,8 @@
         .drawer-overlay {
             position: absolute;
             inset: 0;
-            background: rgba(0,0,0,.4);
-            backdrop-filter: blur(2px);
+            background: rgba(0,0,0,.55);
+            backdrop-filter: blur(3px);
         }
 
         .drawer-panel {
@@ -303,18 +363,29 @@
             top: 0;
             left: 0;
             bottom: 0;
-            width: 280px;
-            background: var(--surface);
+            width: 290px;
+            background: var(--dark);
             display: flex;
             flex-direction: column;
-            animation: slideIn .22s ease;
+            animation: slideIn .24s ease;
+            box-shadow: 8px 0 32px rgba(0,0,0,0.3);
+        }
+
+        .drawer-panel::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--gold), var(--gold-light), var(--gold));
         }
 
         @keyframes slideIn { from { transform: translateX(-100%); } to { transform: translateX(0); } }
 
         .drawer-header {
-            padding: 18px 20px;
-            border-bottom: 1px solid var(--border);
+            padding: 20px;
+            border-bottom: 1px solid var(--border-dark);
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -324,33 +395,48 @@
             width: 32px;
             height: 32px;
             border-radius: 8px;
-            background: var(--surface-2);
-            border: none;
-            font-size: 16px;
-            color: var(--text-muted);
+            background: rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,255,255,0.12);
+            font-size: 15px;
+            color: rgba(255,255,255,0.6);
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
+            transition: all .18s;
         }
 
-        .drawer-nav { flex: 1; padding: 12px; overflow-y: auto; }
+        .drawer-close:hover { background: rgba(255,255,255,0.14); color: #fff; }
+
+        .drawer-nav { flex: 1; padding: 12px 14px; overflow-y: auto; }
 
         /* ── Alerts ── */
         .alert {
             display: flex;
             align-items: center;
             gap: 10px;
-            padding: 12px 16px;
+            padding: 12px 18px;
             border-radius: 12px;
             font-size: 13.5px;
             font-weight: 500;
-            margin: 16px 24px 0;
+            margin: 18px 26px 0;
         }
 
-        .alert-success { background: #f0fdf4; border: 1px solid #bbf7d0; color: #15803d; }
-        .alert-error   { background: #fef2f2; border: 1px solid #fecaca; color: #dc2626; }
-        .alert-info    { background: #eff6ff; border: 1px solid #bfdbfe; color: #2563eb; }
+        .alert-success {
+            background: #f0fdf4;
+            border: 1px solid #86efac;
+            color: #15803d;
+        }
+        .alert-error {
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            color: #dc2626;
+        }
+        .alert-info {
+            background: #f0f7f4;
+            border: 1px solid var(--border);
+            color: var(--mid);
+        }
 
         /* ── Main content ── */
         #main-content {
@@ -366,14 +452,14 @@
                 margin-left: 0;
                 padding-top: var(--header-h);
             }
-            .alert { margin: 12px 16px 0; }
+            .alert { margin: 14px 18px 0; }
         }
 
         /* ── Scrollbar ── */
         ::-webkit-scrollbar { width: 4px; height: 4px; }
         ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 99px; }
-        ::-webkit-scrollbar-thumb:hover { background: var(--text-faint); }
+        ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 99px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.25); }
     </style>
     @stack('styles')
 </head>
@@ -443,7 +529,7 @@
                 <strong>{{ auth('brfinal')->user()->nom_complet }}</strong>
                 <span>{{ auth('brfinal')->user()->telephone }}</span>
             </div>
-            <svg width="14" height="14" fill="none" stroke="#b0aaa0" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+            <svg width="14" height="14" fill="none" stroke="rgba(255,255,255,0.4)" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
         </a>
         <form action="{{ route('br.logout') }}" method="POST">
             @csrf
@@ -510,8 +596,8 @@
                 Cahier de caisse
             </a>
 
-            <div style="padding-top:20px; margin-top:20px; border-top:1px solid var(--border);">
-                <a href="{{ route('br.membre.profil') }}" class="sidebar-user" style="margin-bottom:4px">
+            <div style="padding-top:20px; margin-top:20px; border-top:1px solid rgba(255,255,255,0.08);">
+                <a href="{{ route('br.membre.profil') }}" class="sidebar-user" style="margin-bottom:6px">
                     <div class="sidebar-avatar">{{ substr(auth('brfinal')->user()->prenom, 0, 1) }}</div>
                     <div class="sidebar-user-info">
                         <strong>{{ auth('brfinal')->user()->nom_complet }}</strong>
