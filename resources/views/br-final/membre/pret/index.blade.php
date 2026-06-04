@@ -36,6 +36,8 @@
 </style>
 @endpush
 
+@section('content')
+
 {{-- Hero Header --}}
 <div style="background:var(--green);padding:24px 20px 22px;position:relative;overflow:hidden">
   <div style="position:absolute;right:-20px;top:-20px;width:130px;height:130px;border-radius:50%;background:rgba(212,160,23,.07)"></div>
