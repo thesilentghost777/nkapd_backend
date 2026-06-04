@@ -225,7 +225,7 @@
     <div style="width:72px;height:72px;border-radius:50%;background:var(--bg);display:flex;align-items:center;justify-content:center;margin:0 auto 18px;font-size:28px;border:0.5px solid var(--border)">🔒</div>
     <p style="font-size:17px;font-weight:700;color:var(--text);margin-bottom:8px">Accès restreint aux prêts</p>
     <p style="font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:18px">Vous n'êtes pas encore éligible pour soumettre une demande de prêt dans le Business Room.</p>
-    <span style="display:inline-flex;align-items:center;gap:6px;border:1.5px solid var(--green-mid);border-radius:20px;padding:7px 16px;font-size:12px;font-weight:600;color:var(--green-mid)">🛡 ADHÉSION ANNUELLE REQUISE</span>
+    <span style="display:inline-flex;align-items:center;gap:6px;border:1.5px solid var(--green-mid);border-radius:20px;padding:7px 16px;font-size:12px;font-weight:600;color:var(--green-mid)">🛡 Parainage regis</span>
   </div>
   @endif
 
